@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "ir.fanap.chattestapp"
+        minSdkVersion 17
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.setUseSupportLibrary(true)
+        multiDexEnabled true
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            buildConfigField("String", "SOCKET_ADDRESS", "\"ws://172.16.106.26:8003/ws\"")
+            buildConfigField("String", "SSO_HOST", "\"http://172.16.110.76\"")
+            buildConfigField("String", "PLATFORM_HOST", "\"http://172.16.106.26:8080/hamsam/\"")
+            buildConfigField("String", "FILE_SERVER", "\"http://172.16.106.26:8080/hamsam/\"")
+            buildConfigField("String", "SERVER_NAME", "\"chat-server\"")
+            buildConfigField("String", "APP_ID", "\"POD-Chat\"")
+
+            //
+
+            buildConfigField("String", "SANDB_SOCKET_ADDRESS", "\"wss://chat-sandbox.pod.land/ws\"")
+            buildConfigField("String", "SANDB_SSO_HOST", "\"https://accounts.pod.land/\"")
+            buildConfigField("String", "SANDB_PLATFORM_HOST", "\"https://sandbox.pod.land:8043/srv/basic-platform/\"")
+            buildConfigField("String", "SANDB_FILE_SERVER", "\"http://sandbox.pod.land:8443/\"")
+
+
+        }
+    }
+    /*In order to fix this issue
+    android studio error: Default interface methods are only supported starting with Android N (--min-api 24)
+    it has been added
+    */
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = '1.8'
+            freeCompilerArgs += '-include-runtime'
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.21'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+    kapt "android.arch.lifecycle:compiler:1.1.1"
+    //Rx
+
+    implementation 'io.reactivex:rxjava:1.1.6'
+    implementation 'io.reactivex:rxandroid:1.2.1'
+    //Dagger 2
+    //    implementation "com.google.dagger:dagger:2.16"
+//        kapt "com.google.dagger:dagger-compiler:2.16"
+
+    implementation 'com.github.javafaker:javafaker:0.17.2'
+    implementation 'com.fanap.podchat:podchat:0.4.1.7'
+}
