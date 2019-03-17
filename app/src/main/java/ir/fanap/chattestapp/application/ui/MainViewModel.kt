@@ -88,10 +88,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onSeen(content: String?, response: ChatResponse<ResultMessage>?) {
                 super.onSeen(content, response)
+                testListener.onSeen(response)
             }
 
             override fun onDeliver(content: String?, response: ChatResponse<ResultMessage>?) {
                 super.onDeliver(content, response)
+                testListener.onDeliver(response)
             }
         })
     }
@@ -149,18 +151,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun showLog() {
-        var handler: Handler? = null
-
-        handler?.post {
-            val process: Process = Runtime.getRuntime().exec("logcat -d")
-            val bufferedReader: BufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-            var log: StringBuilder = java.lang.StringBuilder()
-            var line = bufferedReader.readLine()
-            while ((line) != null) {
-                log.append(line)
-                observableLog.onNext(log.toString())
-            }
-        }
+//        var handler: Handler? = null
+//
+//        handler?.post {
+//            val process: Process = Runtime.getRuntime().exec("logcat -d")
+//            val bufferedReader: BufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+//            var log: StringBuilder = java.lang.StringBuilder()
+//            var line = bufferedReader.readLine()
+//            while ((line) != null) {
+//                log.append(line)
+//                observableLog.onNext(log.toString())
+//            }
+//        }
     }
 
     fun blockContact(requestBlock: RequestBlock): String {

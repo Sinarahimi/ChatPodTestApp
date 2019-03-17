@@ -36,7 +36,6 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.util.ArrayList
 
-
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
     private lateinit var buttonCoonect: Button
@@ -90,10 +89,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             8 -> {
                 sendTextMsg()
             }
+            9 -> {
+                removeContact()
+            }
 
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -112,12 +113,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         }
 
-        for (i in 0..8) {
+        for (i in 0..9) {
             val method = Method()
             method.methodName = methodNames[i]
             method.funcOne = methodFuncOne[i]
             method.funcTwo = methodFuncTwo[i]
-            method.funcThree= methodFuncThree[i]
+            method.funcThree = methodFuncThree[i]
             method.funcFour = methodFuncFour[i]
             methods.add(method)
         }
@@ -202,10 +203,30 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
+    override fun onSent(response: ChatResponse<ResultMessage>?) {
+        super.onSent(response)
+        if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
+            val position = 8
+            changeSecondIconReceive(position)
+        }
+    }
+
+    override fun onSeen(response: ChatResponse<ResultMessage>?) {
+        super.onSeen(response)
+        val position = 8
+        changeFourthIconReceive(position)
+    }
+
+    override fun onDeliver(response: ChatResponse<ResultMessage>?) {
+        super.onDeliver(response)
+        val position = 8
+        changeThirdIconReceive(position)
+    }
+
     override fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {
         super.onUpdateContact(response)
-        val position = 8
         if (fucCallback[ConstantMsgType.UPDATE_CONTACT] == response?.uniqueId) {
+            val position = 7
             changeIconReceive(position)
         }
     }
@@ -216,7 +237,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onBlock(chatResponse: ChatResponse<ResultBlock>?) {
         super.onBlock(chatResponse)
         if (fucCallback[ConstantMsgType.BLOCK_CONTACT] == chatResponse?.uniqueId) {
-            val position = 3
+            val position = 2
 
             changeIconReceive(position)
 
@@ -250,6 +271,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
 
         }
+
+        if (fucCallback[ConstantMsgType.REMOVE_CONTACT] == response?.uniqueId) {
+            var id = response?.result?.contact?.id
+            if (id != null) {
+                fucCallback.remove(ConstantMsgType.REMOVE_CONTACT)
+                val requestRemoveContact = RequestRemoveContact.Builder(id).build()
+                fucCallback[ConstantMsgType.REMOVE_CONTACT] = mainViewModel.removeContact(requestRemoveContact)
+                val position = 9
+                changeIconSend(position)
+            }
+        }
     }
 
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
@@ -271,6 +303,29 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             changeFourthIconReceive(position)
         }
 
+    }
+
+    private fun connect() {
+
+        //sandBox
+
+//        mainViewModel.connect(
+//            BuildConfig.SANDB_SOCKET_ADDRESS,
+//            BuildConfig.APP_ID,
+//            BuildConfig.SERVER_NAME
+//            ,
+//            SANDB_TOKEN,
+//            BuildConfig.SANDB_SSO_HOST,
+//            BuildConfig.SANDB_PLATFORM_HOST,
+//            BuildConfig.SANDB_FILE_SERVER,
+//            null
+//        )
+
+        //Local
+        mainViewModel.connect(
+            BuildConfig.SOCKET_ADDRESS, BuildConfig.APP_ID, BuildConfig.SERVER_NAME
+            , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
+        )
     }
 
     private fun changeFourthIconReceive(position: Int) {
@@ -299,13 +354,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
-    override fun onSent(response: ChatResponse<ResultMessage>?) {
-        super.onSent(response)
-        if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
-            val position = 8
-            changeSecondIconReceive(position)
-        }
-    }
 
     private fun changeSecondIconReceive(position: Int) {
         activity?.runOnUiThread {
@@ -323,7 +371,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onRemoveContact(response: ChatResponse<ResultRemoveContact>?) {
         super.onRemoveContact(response)
-
+        if (fucCallback[ConstantMsgType.REMOVE_CONTACT] == response?.uniqueId) {
+            val position = 9
+            changeIconReceive(position)
+        }
     }
 
     override fun onGetContact(response: ChatResponse<ResultContact>?) {
@@ -360,27 +411,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
-    private fun connect() {
+    private fun removeContact() {
+//        val
+        val requestAddContact = RequestAddContact.Builder()
+            .firstName(faker.name().firstName())
+            .lastName(faker.name().lastName())
+            .email(faker.lordOfTheRings().character() + "@Gmail.com")
+            .cellphoneNumber(faker.phoneNumber().cellPhone())
+            .build()
+        fucCallback[ConstantMsgType.REMOVE_CONTACT] = mainViewModel.addContacts(requestAddContact)
 
-        //sandBox
-
-        mainViewModel.connect(
-            BuildConfig.SANDB_SOCKET_ADDRESS,
-            BuildConfig.APP_ID,
-            BuildConfig.SERVER_NAME
-            ,
-            SANDB_TOKEN,
-            BuildConfig.SANDB_SSO_HOST,
-            BuildConfig.SANDB_PLATFORM_HOST,
-            BuildConfig.SANDB_FILE_SERVER,
-            null
-        )
-
-        //Local
-//        mainViewModel.connect(
-//                BuildConfig.SOCKET_ADDRESS, BuildConfig.APP_ID, BuildConfig.SERVER_NAME
-//                , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
-//        )
     }
 
     private fun handleSendMessageResponse(contactList: ArrayList<Contact>?) {
@@ -401,7 +441,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
         }
-
     }
 
     //Response from getContact
@@ -432,16 +471,18 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val cellPhoneNumber = contact.cellphoneNumber
                     val firstName = contact.firstName
                     val lastName = contact.lastName
+                    val email = contact.email
 
                     val requestUpdateContact = RequestUpdateContact.Builder(contactid)
                         .cellphoneNumber(cellPhoneNumber)
                         .firstName(firstName)
                         .lastName(lastName)
+                        .email(email)
                         .build()
 
                     val uniqueId = mainViewModel.updateContact(requestUpdateContact)
-                    fucCallback["UPDATE_CONTACT"] = uniqueId
-                    changeIconSend(8)
+                    fucCallback[ConstantMsgType.UPDATE_CONTACT] = uniqueId
+                    changeIconSend(7)
                     break
                 }
             }
@@ -494,7 +535,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .build()
         val uniqueId = mainViewModel.addContacts(requestAddContact)
         fucCallback[ConstantMsgType.ADD_CONTACT] = uniqueId
-        changeIconSend(4)
+        val position = 3
+        changeIconSend(position)
     }
 
     private fun getContact() {
@@ -599,6 +641,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun updateContact() {
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.UPDATE_CONTACT] = mainViewModel.getContact(requestGetContact)
+        val position = 7
+        changeIconSend(position)
     }
 
     private fun getBlockList() {

@@ -13,7 +13,8 @@ class MethodList {
                 "5 Get BlockList",
                 "6 unBlock Contact",
                 "7 Update Contact",
-                "8 Send Message"
+                "8 Send Message",
+                "9 Remove Contact"
             )
 
 
@@ -27,7 +28,8 @@ class MethodList {
                 "",
                 "",
                 "",
-                "8 sent"
+                "8 sent",
+                ""
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -40,7 +42,8 @@ class MethodList {
                 "",
                 "",
                 "",
-                "8 deliver"
+                "8 deliver",
+                ""
             )
 
         val methodFuncThree: MutableList<String> =
@@ -53,12 +56,14 @@ class MethodList {
                 "",
                 "",
                 "",
-                "8 seen"
+                "8 seen",
+                ""
             )
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
                 "OWNER_GROUP",
+                "",
                 "",
                 "",
                 "",

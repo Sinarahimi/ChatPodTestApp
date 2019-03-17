@@ -16,4 +16,6 @@ interface TestListener {
     fun onLogEvent(log: String) {}
     fun onUpdateContact( response: ChatResponse<ResultUpdateContact>?){}
     fun onSent(response: ChatResponse<ResultMessage>?) {}
+    fun onSeen(response: ChatResponse<ResultMessage>?) {}
+    fun onDeliver(response: ChatResponse<ResultMessage>?) {}
 }
