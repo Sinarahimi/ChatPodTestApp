@@ -261,7 +261,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onAddContact(response)
         if (fucCallback[ConstantMsgType.ADD_CONTACT] == response?.uniqueId) {
             val position = 3
-
             changeIconReceive(position)
 
             var id = response?.result?.contact?.id
@@ -542,7 +541,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun getContact() {
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        fucCallback["GET_CONTACT"] = uniqueId
+        fucCallback[ConstantMsgType.GET_CONTACT] = uniqueId
     }
 
     private fun createThread() {
@@ -553,7 +552,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
-        changeIconSend(1)
+        changeIconSend(0)
     }
 
     private fun creatThreadWithMessage() {
@@ -604,6 +603,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     //handle getContact response to create thread
     //
+    /**
+     * Create the thread to p to p/channel/group. The list below is showing all of the threads type
+     * int NORMAL = 0;
+     * int OWNER_GROUP = 1;
+     * int PUBLIC_GROUP = 2;
+     * int CHANNEL_GROUP = 4;
+     * int TO_BE_USER_ID = 5;
+     * <p>
+     * int CHANNEL = 8;
+     */
     private fun handleGetThreadResponse(contactList: ArrayList<Contact>?) {
         if (contactList != null) {
             for (contact: Contact in contactList) {
