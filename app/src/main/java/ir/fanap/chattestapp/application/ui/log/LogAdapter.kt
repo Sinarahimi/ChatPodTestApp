@@ -1,5 +1,6 @@
 package ir.fanap.chattestapp.application.ui.log
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,11 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.textViewLog.text = logs.get(position)
+        if (position % 2 == 1) {
+            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
+        } else {
+            viewHolder.itemView.setBackgroundColor(Color.parseColor("#FFFAF8FD"))
+        }
     }
 
     override fun getItemCount(): Int {
@@ -27,7 +33,7 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
     }
 
 
-    fun additem(){
+    fun additem() {
 
     }
 }

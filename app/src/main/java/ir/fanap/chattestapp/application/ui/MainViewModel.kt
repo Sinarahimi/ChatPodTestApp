@@ -95,6 +95,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onDeliver(content, response)
                 testListener.onDeliver(response)
             }
+
+            override fun onThreadRemoveParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
+                super.onThreadRemoveParticipant(content, response)
+                testListener.onThreadRemoveParticipant(response)
+            }
+
+            override fun onThreadAddParticipant(content: String?, response: ChatResponse<ResultAddParticipant>?) {
+                super.onThreadAddParticipant(content, response)
+                testListener.onThreadAddParticipant(response)
+            }
+
         })
     }
 
@@ -114,7 +125,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-//    * createThreadTypes = {
+    //    * createThreadTypes = {
 //        *         NORMAL: 0,
 //        *         OWNER_GROUP: 1,
 //        *         PUBLIC_GROUP: 2,
@@ -183,5 +194,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendTextMsg(requestMessage: RequestMessage): String {
         return chat.sendTextMessage(requestMessage, null)
+    }
+
+    fun forwardMessage(requestForwardMessage: RequestForwardMessage): List<String> {
+        return chat.forwardMessage(requestForwardMessage)
+    }
+
+    fun replyMessage(replyMessage: RequestReplyMessage): String {
+        return chat.replyMessage(replyMessage, null)
+    }
+
+    fun addParticipant(requestAddParticipants: RequestAddParticipants): String {
+        return chat.addParticipants(requestAddParticipants, null)
+    }
+
+    fun removeParticipant(requestRemoveParticipants: RequestRemoveParticipants): String {
+        return chat.removeParticipants(requestRemoveParticipants, null)
+    }
+
+    fun leaveThread(requestLeaveThread: RequestLeaveThread): String {
+        return chat.leaveThread(requestLeaveThread, null)
     }
 }

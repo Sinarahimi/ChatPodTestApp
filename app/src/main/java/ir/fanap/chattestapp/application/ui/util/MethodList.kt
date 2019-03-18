@@ -14,55 +14,65 @@ class MethodList {
                 "6 unBlock Contact",
                 "7 Update Contact",
                 "8 Send Message",
-                "9 Remove Contact"
+                "9 Remove Contact",
+                "10 Add participant",
+                "11 remove participant"
             )
 
 
         val methodFuncOne: MutableList<String> =
             arrayListOf(
-                "CHANNEL",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "8 sent",
-                ""
+                "CHANNEL",//0
+                "",//1
+                "",//2
+                "",//3
+                "",//4
+                "",//5
+                "",//6
+                "",//7
+                "8 sent",//8
+                "",//9
+                "",//10
+                ""//11
             )
 
         val methodFuncTwo: MutableList<String> =
             arrayListOf(
                 "CHANNEL_GROUP",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "",//1
+                "",//2
+                "",//3
+                "",//4
+                "",//5
+                "",//6
+                "",//7
                 "8 deliver",
-                ""
+                "",//9
+                "",//10
+                ""//11
             )
 
         val methodFuncThree: MutableList<String> =
             arrayListOf(
-                "PUBLIC_GROUP",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "PUBLIC_GROUP",//0
+                "",//1
+                "",//2
+                "",//3
+                "",//4
+                "",//5
+                "",//6
+                "",//7
                 "8 seen",
+                "",
+                "",
                 ""
             )
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
                 "OWNER_GROUP",
+                "",
+                "",
                 "",
                 "",
                 "",

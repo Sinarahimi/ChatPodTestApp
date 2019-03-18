@@ -2,26 +2,39 @@ package ir.fanap.chattestapp.application.ui
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.Toolbar
 import ir.fanap.chattestapp.R
+import kotlinx.android.synthetic.main.activity_main_bubble.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_bubble)
         val titles = arrayOf("chat", "Function", "Log")
-        val toolbar: Toolbar = findViewById(R.id.toolbar_test)
-        val viewPager: ViewPager = findViewById(R.id.viewPager)
-        val tabLayout: TabLayout = findViewById(R.id.tabLayout)
+        val viewPager: ViewPager = findViewById(R.id.view_pager)
+
         val pagerAdapter = PagerAdapter(supportFragmentManager, titles)
 
-        setSupportActionBar(toolbar)
-
         viewPager.adapter = pagerAdapter
-        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
+        viewPager.addOnPageChangeListener(object :ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                top_navigation_constraint.setCurrentActiveItem(position)
+            }
+
+        })
+
+        top_navigation_constraint.setNavigationChangeListener{ view, position ->
+            view_pager.setCurrentItem(position, true)
+        }
+
         viewPager.offscreenPageLimit = 2
     }
 }

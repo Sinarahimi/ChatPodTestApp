@@ -14,8 +14,14 @@ interface TestListener {
     fun onRemoveContact(response: ChatResponse<ResultRemoveContact>?) {}
     fun onBlockList(response: ChatResponse<ResultBlockList>?) {}
     fun onLogEvent(log: String) {}
-    fun onUpdateContact( response: ChatResponse<ResultUpdateContact>?){}
+    fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {}
     fun onSent(response: ChatResponse<ResultMessage>?) {}
     fun onSeen(response: ChatResponse<ResultMessage>?) {}
     fun onDeliver(response: ChatResponse<ResultMessage>?) {}
+    fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
+    }
+
+    fun onThreadAddParticipant(response: ChatResponse<ResultAddParticipant>?) {
+
+    }
 }
