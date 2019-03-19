@@ -20,6 +20,7 @@ class ConstantMsgType {
         const val CREATE_THREAD_OWNER_GROUP = "CREATE_THREAD_OWNER_GROUP"
         const val REMOVE_PARTICIPANT = "REMOVE_PARTICIPANT"
         const val ADD_PARTICIPANT = "ADD_PARTICIPANT"
+        const val FORWARD_MESSAGE= "FORWARD_MESSAGE"
     }
 
     @StringDef(UPDATE_CONTACT,
@@ -35,6 +36,7 @@ class ConstantMsgType {
         CREATE_THREAD_OWNER_GROUP,
         REMOVE_PARTICIPANT,
         ADD_PARTICIPANT,
+        FORWARD_MESSAGE,
         REMOVE_CONTACT
         )
 

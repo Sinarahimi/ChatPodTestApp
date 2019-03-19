@@ -51,6 +51,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private val TOKEN = "5fb88da4c6914d07a501a76d68a62363"
     private val SANDB_TOKEN = "bb899e9b849340ef9375c4b37a85e185"
 
+    //TODO change to CallBackMethod
     /**/
     companion object {
 
@@ -436,6 +437,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
             handleRemoveParticipant(contactList)
         }
+        if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.FORWARD_MESSAGE)
+            // CREATE WITH MSSAGE CONTACT
+            // STORE THE MESSAGE ID
+            //
+        }
     }
 
     private fun handleAddParticipant(contactList: ArrayList<Contact>?) {
@@ -665,7 +672,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
 
-
     private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
         if (contactList != null) {
             for (contact: Contact in contactList) {
@@ -688,7 +694,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     break
                 }
             }
-        }    }
+        }
+    }
 
     //handle getContact response to create thread
     //
@@ -785,6 +792,22 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         fucCallback[ConstantMsgType.ADD_PARTICIPANT] = mainViewModel.getContact(requestGetContact)
         val position = 10
         changeIconSend(position)
+    }
+
+    private fun forwardMessage() {
+
+        val requestGetContact = RequestGetContact.Builder().build()
+        fucCallback[ConstantMsgType.FORWARD_MESSAGE] = mainViewModel.getContact(requestGetContact)
+
+
+        //get contact
+        //createThread with message with that first contact
+        //createThread with second contact
+
+        //forward the message from first thread to second thread
+
+        // if the sent type come then its sent
+
     }
 
 }
