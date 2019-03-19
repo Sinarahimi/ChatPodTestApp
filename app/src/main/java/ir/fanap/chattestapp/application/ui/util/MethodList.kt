@@ -38,7 +38,7 @@ class MethodList {
 
         val methodFuncTwo: MutableList<String> =
             arrayListOf(
-                "CHANNEL_GROUP",
+                "CHANNEL_GROUP",//0
                 "",//1
                 "",//2
                 "",//3

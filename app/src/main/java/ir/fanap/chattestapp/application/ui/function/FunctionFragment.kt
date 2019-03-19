@@ -118,7 +118,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         }
 
-        for (i in 0..10) {
+        for (i in 0..11) {
             val method = Method()
             method.methodName = methodNames[i]
             method.funcOne = methodFuncOne[i]
@@ -160,7 +160,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onError(chatResponse: ErrorOutPut?) {
         super.onError(chatResponse)
-        Toast.makeText(activity, chatResponse?.errorMessage, Toast.LENGTH_SHORT).show()
+        activity?.runOnUiThread {
+            Toast.makeText(activity, chatResponse?.errorMessage, Toast.LENGTH_SHORT).show()
+        }
         val uniqueId = chatResponse?.uniqueId
         if (uniqueId == fucCallback[ConstantMsgType.ADD_CONTACT]) {
             fucCallback[uniqueId]
@@ -430,6 +432,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
             handleAddParticipant(contactList)
         }
+        if (fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
+            handleRemoveParticipant(contactList)
+        }
     }
 
     private fun handleAddParticipant(contactList: ArrayList<Contact>?) {
@@ -572,7 +578,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.REMOVE_PARTICIPANT] = mainViewModel.getContact(requestGetContact)
-
+        val position = 11
+        changeIconSend(position)
     }
 
     private fun blockContact() {
@@ -657,6 +664,31 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         fucCallback[ConstantMsgType.CREATE_THREAD_CHANNEL] = uniqueId
     }
 
+
+
+    private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
+        if (contactList != null) {
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 1))
+                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(0, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThread(requestCreateThread)
+                    fucCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
+
+                    createThreadChannel(inviteList)
+                    createThreadChannelGroup(inviteList)
+                    createThreadOwnerGroup(inviteList)
+                    createThreadPublicGroup(inviteList)
+                    break
+                }
+            }
+        }    }
 
     //handle getContact response to create thread
     //
@@ -751,6 +783,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun addParticipant() {
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         fucCallback[ConstantMsgType.ADD_PARTICIPANT] = mainViewModel.getContact(requestGetContact)
+        val position = 10
+        changeIconSend(position)
     }
 
 }
