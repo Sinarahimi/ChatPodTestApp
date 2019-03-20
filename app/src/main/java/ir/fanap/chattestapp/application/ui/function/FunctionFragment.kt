@@ -47,9 +47,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private var fucCallback: HashMap<String, String> = hashMapOf()
     private lateinit var textView_state: TextView
     private lateinit var functionAdapter: FunctionAdapter
+    private var sandbox = false
     private val faker: Faker = Faker()
     private val TOKEN = "5fb88da4c6914d07a501a76d68a62363"
-    private val SANDB_TOKEN = "bb899e9b849340ef9375c4b37a85e185"
+    private val SANDB_TOKEN = "8096f3e176a84aebb672a5e2f2107a02"
 
     //TODO change to CallBackMethod
     /**/
@@ -99,7 +100,22 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             11 -> {
                 removeParticipant()
             }
+            12 -> {
+                forwardMessage()
+            }
+            13 -> {
+                replyMessage()
+            }
+            14 -> {
+                leaveThread()
+            }
         }
+    }
+
+    private fun leaveThread() {
+        val requestGetContact = RequestGetContact.Builder().build()
+        fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.getContact(requestGetContact)
+
     }
 
     override fun onCreateView(
@@ -119,7 +135,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         }
 
-        for (i in 0..11) {
+        for (i in 0..14) {
             val method = Method()
             method.methodName = methodNames[i]
             method.funcOne = methodFuncOne[i]
@@ -212,9 +228,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onSent(response: ChatResponse<ResultMessage>?) {
         super.onSent(response)
+        if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
+
+            val position = 12
+            changeIconReceive(position)
+            changeSecondIconReceive(position)
+        }
         if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
             val position = 8
             changeSecondIconReceive(position)
+        } else {
+            val messageIds = ArrayList<Long>()
+            messageIds.add(response?.result?.messageId!!)
+
+            val threadId = fucCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID]
+            val requestForwardMessage = RequestForwardMessage.Builder(threadId!!.toLong(), messageIds).build()
+            fucCallback[ConstantMsgType.FORWARD_MESSAGE] = mainViewModel.forwardMessage(requestForwardMessage)[0]
+            val position = 12
+            changeIconSend(position)
         }
     }
 
@@ -228,6 +259,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onDeliver(response)
         val position = 8
         changeThirdIconReceive(position)
+    }
+
+    override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
+        super.onLeaveThread(response)
+        val position = 14
+        changeIconReceive(position)
     }
 
     override fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {
@@ -308,6 +345,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             changeFourthIconReceive(position)
         }
 
+        if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
+            val threadId = response?.result?.thread?.id
+            val requeLeaveThread = RequestLeaveThread.Builder(threadId!!.toLong()).build()
+            fucCallback[ConstantMsgType.LEAVE_THREAD] =  mainViewModel.leaveThread(requeLeaveThread)
+            val position = 14
+            changeIconSend(position)
+        }
+
+        if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
+            val threadId = response?.result?.thread?.id
+            fucCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID] = threadId.toString()
+        }
+        if (fucCallback[ConstantMsgType.REPLY_MESSAGE] == response?.uniqueId) {
+            val threadId = response?.result?.thread?.id
+            fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = threadId.toString()
+
+        }
+
         if (fucCallback[ConstantMsgType.ADD_PARTICIPANT] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
             var participantId = fucCallback["ADD_PARTICIPANT_ID"]
@@ -326,25 +381,34 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun connect() {
 
-        //sandBox
+        if (sandbox) {
+            //sandBox
 
-//        mainViewModel.connect(
-//            BuildConfig.SANDB_SOCKET_ADDRESS,
-//            BuildConfig.APP_ID,
-//            BuildConfig.SERVER_NAME
-//            ,
-//            SANDB_TOKEN,
-//            BuildConfig.SANDB_SSO_HOST,
-//            BuildConfig.SANDB_PLATFORM_HOST,
-//            BuildConfig.SANDB_FILE_SERVER,
-//            null
-//        )
+            mainViewModel.connect(
+                BuildConfig.SANDB_SOCKET_ADDRESS,
+                BuildConfig.APP_ID,
+                BuildConfig.SERVER_NAME
+                ,
+                SANDB_TOKEN,
+                BuildConfig.SANDB_SSO_HOST,
+                BuildConfig.SANDB_PLATFORM_HOST,
+                BuildConfig.SANDB_FILE_SERVER,
+                null
+            )
+        } else {
+            //Local
 
-        //Local
-        mainViewModel.connect(
-            BuildConfig.SOCKET_ADDRESS, BuildConfig.APP_ID, BuildConfig.SERVER_NAME
-            , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
-        )
+//            mainViewModel.connect(
+//                BuildConfig.SOCKET_ADDRESS, BuildConfig.APP_ID, BuildConfig.SERVER_NAME
+//                , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
+//            )
+            mainViewModel.connect(
+                "ws://172.16.110.131:8003/ws", BuildConfig.APP_ID, "chat-server2"
+                , TOKEN, BuildConfig.SSO_HOST, BuildConfig.PLATFORM_HOST, BuildConfig.FILE_SERVER, null
+            )
+        }
+
+
     }
 
     private fun changeFourthIconReceive(position: Int) {
@@ -400,6 +464,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onGetContact(response)
         val contactList = response?.result?.contacts
 
+        if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.LEAVE_THREAD)
+            handleLeaveThread(contactList)
+        }
+
+        if (fucCallback[ConstantMsgType.REPLY_MESSAGE] == response?.uniqueId) {
+            handleReplyMessage(contactList)
+        }
+
         if (fucCallback[ConstantMsgType.SEND_MESSAGE] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.SEND_MESSAGE)
             handleSendMessageResponse(contactList)
@@ -439,9 +512,76 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
         if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.FORWARD_MESSAGE)
+            handleForward(contactList)
             // CREATE WITH MSSAGE CONTACT
             // STORE THE MESSAGE ID
             //
+        }
+    }
+
+    private fun handleLeaveThread(contactList: ArrayList<Contact>?) {
+        if (contactList != null) {
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 1))
+                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(0, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    if (uniqueId?.get(0) != null) {
+                        fucCallback[ConstantMsgType.LEAVE_THREAD] = uniqueId.get(0)
+                    }
+                    break
+                }
+            }
+        }
+    }
+
+    private fun handleReplyMessage(contactList: ArrayList<Contact>?) {
+        if (contactList != null) {
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 1))
+                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(0, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThread(requestCreateThread)
+                    fucCallback[ConstantMsgType.REPLY_MESSAGE] = uniqueId
+                    break
+                }
+            }
+        }
+
+    }
+
+    private fun handleForward(contactList: ArrayList<Contact>?) {
+        if (contactList != null) {
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    val contactId = contact.id
+
+                    val inviteList = ArrayList<Invitee>()
+                    inviteList.add(Invitee(contactId, 1))
+                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+                    val requestCreateThread: RequestCreateThread =
+                        RequestCreateThread.Builder(0, inviteList)
+                            .message(requestThreadInnerMessage)
+                            .build()
+                    val uniqueId = mainViewModel.createThread(requestCreateThread)
+                    fucCallback[ConstantMsgType.FORWARD_MESSAGE] = uniqueId
+                    break
+                }
+            }
         }
     }
 
@@ -808,6 +948,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         // if the sent type come then its sent
 
+    }
+
+    private fun replyMessage() {
+        val requestGetContact = RequestGetContact.Builder().build()
+        fucCallback[ConstantMsgType.REPLY_MESSAGE] = mainViewModel.getContact(requestGetContact)
+
+        //getContact
+        //CreateThread with message
+        //get that message id and thread id and call reply Message
     }
 
 }

@@ -82,5 +82,5 @@ dependencies {
 //        kapt "com.google.dagger:dagger-compiler:2.16"
 
     implementation 'com.github.javafaker:javafaker:0.17.2'
-    implementation 'com.fanap.podchat:podchat:0.4.1.7'
+    implementation 'com.fanap.podchat:podchat:0.4.1.8'
 }

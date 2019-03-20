@@ -16,7 +16,10 @@ class MethodList {
                 "8 Send Message",
                 "9 Remove Contact",
                 "10 Add participant",
-                "11 remove participant"
+                "11 remove participant",
+                "12 Forward Message",
+                "13 Reply Message",
+                "14 Leave Thread"
             )
 
 
@@ -33,7 +36,10 @@ class MethodList {
                 "8 sent",//8
                 "",//9
                 "",//10
-                ""//11
+                "",//11
+                "onSent",//12
+                "",//13
+                ""
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -49,7 +55,10 @@ class MethodList {
                 "8 deliver",
                 "",//9
                 "",//10
-                ""//11
+                "",//11
+                "",//12
+                "",//13
+                ""
             )
 
         val methodFuncThree: MutableList<String> =
@@ -63,24 +72,30 @@ class MethodList {
                 "",//6
                 "",//7
                 "8 seen",
-                "",
-                "",
+                "",//9
+                "",//10
+                "",//11
+                "",//12
+                "",//13
                 ""
             )
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
                 "OWNER_GROUP",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "",//1
+                "",//2
+                "",//3
+                "",//4
+                "",//5
+                "",//6
+                "",//7
+                "",//8
+                "",//9
+                "",//10
+                "",//11
+                "",//12
+                "",//13
                 ""
             )
     }

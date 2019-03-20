@@ -24,4 +24,9 @@ interface TestListener {
     fun onThreadAddParticipant(response: ChatResponse<ResultAddParticipant>?) {
 
     }
+
+    fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
+
+
+    }
 }

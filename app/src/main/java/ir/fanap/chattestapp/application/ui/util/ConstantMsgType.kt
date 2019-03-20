@@ -21,6 +21,11 @@ class ConstantMsgType {
         const val REMOVE_PARTICIPANT = "REMOVE_PARTICIPANT"
         const val ADD_PARTICIPANT = "ADD_PARTICIPANT"
         const val FORWARD_MESSAGE= "FORWARD_MESSAGE"
+        const val FORWARD_MESSAGE_ID= "FORWARD_MESSAGE_ID"
+        const val FORWARD_MESSAGE_THREAD_ID= "FORWARD_MESSAGE_ID"
+        const val REPLY_MESSAGE= "REPLY_MESSAGE"
+        const val REPLY_MESSAGE_THREAD_ID= "REPLY_MESSAGE_THREAD_ID"
+        const val LEAVE_THREAD= "LEAVE_THREAD"
     }
 
     @StringDef(UPDATE_CONTACT,
@@ -37,6 +42,11 @@ class ConstantMsgType {
         REMOVE_PARTICIPANT,
         ADD_PARTICIPANT,
         FORWARD_MESSAGE,
+        FORWARD_MESSAGE_ID,
+        FORWARD_MESSAGE_THREAD_ID,
+        REPLY_MESSAGE,
+        REPLY_MESSAGE_THREAD_ID,
+        LEAVE_THREAD,
         REMOVE_CONTACT
         )
 

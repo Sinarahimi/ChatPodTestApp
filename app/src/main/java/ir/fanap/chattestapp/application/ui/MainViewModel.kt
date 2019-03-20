@@ -10,6 +10,7 @@ import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -106,6 +107,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onThreadAddParticipant(response)
             }
 
+            override fun onThreadLeaveParticipant(content: String?, response: ChatResponse<ResultLeaveThread>?) {
+                super.onThreadLeaveParticipant(content, response)
+                testListener.onLeaveThread(response)
+            }
+
         })
     }
 
@@ -136,6 +142,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 //
     fun createThread(requestCreateThread: RequestCreateThread): String {
         return chat.createThreadWithMessage(requestCreateThread)
+    }
+
+    fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
+        return chat.createThread(requestCreateThread)
     }
 
     fun updateContact(requestUpdateContact: RequestUpdateContact): String {
