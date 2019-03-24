@@ -24,6 +24,7 @@ class ConstantMsgType {
         const val FORWARD_MESSAGE_ID= "FORWARD_MESSAGE_ID"
         const val FORWARD_MESSAGE_THREAD_ID= "FORWARD_MESSAGE_ID"
         const val REPLY_MESSAGE= "REPLY_MESSAGE"
+        const val REPLY_MESSAGE_ID= "REPLY_MESSAGE_ID"
         const val REPLY_MESSAGE_THREAD_ID= "REPLY_MESSAGE_THREAD_ID"
         const val LEAVE_THREAD= "LEAVE_THREAD"
     }
@@ -45,6 +46,7 @@ class ConstantMsgType {
         FORWARD_MESSAGE_ID,
         FORWARD_MESSAGE_THREAD_ID,
         REPLY_MESSAGE,
+        REPLY_MESSAGE_ID,
         REPLY_MESSAGE_THREAD_ID,
         LEAVE_THREAD,
         REMOVE_CONTACT

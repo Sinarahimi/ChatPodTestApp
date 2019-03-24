@@ -167,6 +167,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         mainViewModel.setTestListener(this)
         mainViewModel.observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
             textView_state.text = it
+
+            if (it.equals("CHAT_READY")) textView_state.setTextColor(
+                ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
+            )
+
         }
     }
 
@@ -228,6 +233,22 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onSent(response: ChatResponse<ResultMessage>?) {
         super.onSent(response)
+
+        if (fucCallback[ConstantMsgType.REPLY_MESSAGE]== response?.uniqueId) {
+            val position = 13
+            changeIconReceive(position)
+        }
+
+        if (fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] == response?.uniqueId) {
+            val messageId = response?.result?.messageId
+            val threadId = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]
+            val replyMessage =
+                RequestReplyMessage.Builder("this is replyMessage", threadId?.toLong()!!, messageId!!).build()
+            fucCallback[ConstantMsgType.REPLY_MESSAGE] = mainViewModel.replyMessage(replyMessage)
+            val position = 13
+            changeIconSend(position)
+        }
+
         if (fucCallback[ConstantMsgType.FORWARD_MESSAGE] == response?.uniqueId) {
 
             val position = 12
@@ -348,7 +369,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (fucCallback[ConstantMsgType.LEAVE_THREAD] == response?.uniqueId) {
             val threadId = response?.result?.thread?.id
             val requeLeaveThread = RequestLeaveThread.Builder(threadId!!.toLong()).build()
-            fucCallback[ConstantMsgType.LEAVE_THREAD] =  mainViewModel.leaveThread(requeLeaveThread)
+            fucCallback[ConstantMsgType.LEAVE_THREAD] = mainViewModel.leaveThread(requeLeaveThread)
             val position = 14
             changeIconSend(position)
         }
@@ -358,6 +379,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             fucCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID] = threadId.toString()
         }
         if (fucCallback[ConstantMsgType.REPLY_MESSAGE] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.REPLY_MESSAGE)
             val threadId = response?.result?.thread?.id
             fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = threadId.toString()
 
@@ -534,7 +556,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                             .build()
                     val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
                     if (uniqueId?.get(0) != null) {
-                        fucCallback[ConstantMsgType.LEAVE_THREAD] = uniqueId.get(0)
+                        fucCallback[ConstantMsgType.LEAVE_THREAD] = uniqueId[0]
                     }
                     break
                 }
@@ -555,8 +577,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
                             .build()
-                    val uniqueId = mainViewModel.createThread(requestCreateThread)
-                    fucCallback[ConstantMsgType.REPLY_MESSAGE] = uniqueId
+                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID] = uniqueId!![0]
+                    fucCallback[ConstantMsgType.REPLY_MESSAGE_ID] = uniqueId[1]
                     break
                 }
             }

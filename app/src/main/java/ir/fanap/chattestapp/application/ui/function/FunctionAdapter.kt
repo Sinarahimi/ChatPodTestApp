@@ -25,19 +25,23 @@ class FunctionAdapter(private val methods: MutableList<Method>, private val view
         viewHolder.textViewFuncFour.text = methods[position].funcFour
         viewHolder.buttonRun.tag = position
 
-        if (viewHolder.textViewFuncOne.text.isEmpty()) {
-            viewHolder.checkBoxOne.visibility = View.GONE
+        if (!viewHolder.textViewFuncOne.text.isEmpty()) {
+            viewHolder.checkBoxOne.visibility = View.VISIBLE
+            viewHolder.textViewFuncOne.visibility =  View.VISIBLE
         }
-        if (viewHolder.textViewFuncTwo.text.isEmpty()) {
-            viewHolder.checkBoxSec.visibility = View.GONE
-        }
-
-        if (viewHolder.textViewFuncThree.text.isEmpty()) {
-            viewHolder.checkBoxThird.visibility = View.GONE
+        if (!viewHolder.textViewFuncTwo.text.isEmpty()) {
+            viewHolder.checkBoxSec.visibility = View.VISIBLE
+            viewHolder.textViewFuncTwo.visibility =  View.VISIBLE
         }
 
-        if (viewHolder.textViewFuncFour.text.isEmpty()) {
-            viewHolder.checkBoxFourth.visibility = View.GONE
+        if (!viewHolder.textViewFuncThree.text.isEmpty()) {
+            viewHolder.checkBoxThird.visibility = View.VISIBLE
+            viewHolder.textViewFuncThree.visibility =  View.VISIBLE
+        }
+
+        if (!viewHolder.textViewFuncFour.text.isEmpty()) {
+            viewHolder.checkBoxFourth.visibility = View.VISIBLE
+            viewHolder.textViewFuncFour.visibility =  View.VISIBLE
         }
     }
 
