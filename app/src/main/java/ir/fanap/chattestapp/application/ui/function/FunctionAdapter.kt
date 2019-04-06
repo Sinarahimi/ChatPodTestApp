@@ -28,20 +28,32 @@ class FunctionAdapter(private val methods: MutableList<Method>, private val view
         if (!viewHolder.textViewFuncOne.text.isEmpty()) {
             viewHolder.checkBoxOne.visibility = View.VISIBLE
             viewHolder.textViewFuncOne.visibility =  View.VISIBLE
+        }else{
+            viewHolder.checkBoxOne.visibility = View.GONE
+            viewHolder.textViewFuncOne.visibility =  View.GONE
         }
         if (!viewHolder.textViewFuncTwo.text.isEmpty()) {
             viewHolder.checkBoxSec.visibility = View.VISIBLE
             viewHolder.textViewFuncTwo.visibility =  View.VISIBLE
+        }else{
+            viewHolder.checkBoxSec.visibility = View.GONE
+            viewHolder.textViewFuncTwo.visibility =  View.GONE
         }
 
         if (!viewHolder.textViewFuncThree.text.isEmpty()) {
             viewHolder.checkBoxThird.visibility = View.VISIBLE
             viewHolder.textViewFuncThree.visibility =  View.VISIBLE
+        }else{
+            viewHolder.checkBoxThird.visibility = View.GONE
+            viewHolder.textViewFuncThree.visibility =  View.GONE
         }
 
         if (!viewHolder.textViewFuncFour.text.isEmpty()) {
             viewHolder.checkBoxFourth.visibility = View.VISIBLE
             viewHolder.textViewFuncFour.visibility =  View.VISIBLE
+        }else{
+            viewHolder.checkBoxFourth.visibility = View.GONE
+            viewHolder.textViewFuncFour.visibility =  View.GONE
         }
     }
 

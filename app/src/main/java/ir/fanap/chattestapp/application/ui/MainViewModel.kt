@@ -2,15 +2,12 @@ package ir.fanap.chattestapp.application.ui
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.os.Handler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
+import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.util.ArrayList
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -140,8 +137,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 //        *       }
 //    */
 //
-    fun createThread(requestCreateThread: RequestCreateThread): String {
-        return chat.createThreadWithMessage(requestCreateThread)
+//    int threadType, Invitee[] invitee, String threadTitle, String description, String image
+//    , String metadata, ChatHandler handler
+    fun createThread(
+        threadType: Int,
+        invitee: Array<Invitee>,
+        threadTitle: String,
+        description: String,
+        image: String,
+        metadata: String
+    ): String {
+        return chat.createThread(threadType,invitee,threadTitle,description,image,metadata,null)
     }
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {

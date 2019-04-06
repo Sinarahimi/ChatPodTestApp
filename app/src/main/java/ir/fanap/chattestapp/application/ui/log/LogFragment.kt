@@ -30,17 +30,13 @@ class LogFragment : Fragment(), TestListener {
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerV_funcLog)
         recyclerView.setHasFixedSize(true)
 
-//        logs = arrayOf("Start Log")
         logAdapter = LogAdapter(logs)
         recyclerView.adapter = logAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
         linearLayoutManager.reverseLayout = true
-//        mainViewModel.showLog()
-//        mainViewModel.observableLog.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
-//            logs = arrayOf(it)
-//            logAdapter.notifyItemInserted(it.length - 1)
-//        }
+        recyclerView.scrollToPosition(logs.size - 1)
+
 
         return view
     }
