@@ -20,23 +20,30 @@ class ConstantMsgType {
         const val CREATE_THREAD_OWNER_GROUP = "CREATE_THREAD_OWNER_GROUP"
         const val REMOVE_PARTICIPANT = "REMOVE_PARTICIPANT"
         const val ADD_PARTICIPANT = "ADD_PARTICIPANT"
-        const val FORWARD_MESSAGE= "FORWARD_MESSAGE"
-        const val FORWARD_MESSAGE_ID= "FORWARD_MESSAGE_ID"
-        const val FORWARD_MESSAGE_THREAD_ID= "FORWARD_MESSAGE_ID"
-        const val REPLY_MESSAGE= "REPLY_MESSAGE"
-        const val REPLY_MESSAGE_ID= "REPLY_MESSAGE_ID"
-        const val REPLY_MESSAGE_THREAD_ID= "REPLY_MESSAGE_THREAD_ID"
-        const val LEAVE_THREAD= "LEAVE_THREAD"
+        const val FORWARD_MESSAGE = "FORWARD_MESSAGE"
+        const val FORWARD_MESSAGE_ID = "FORWARD_MESSAGE_ID"
+        const val FORWARD_MESSAGE_THREAD_ID = "FORWARD_MESSAGE_ID"
+        const val REPLY_MESSAGE = "REPLY_MESSAGE"
+        const val REPLY_MESSAGE_ID = "REPLY_MESSAGE_ID"
+        const val REPLY_MESSAGE_THREAD_ID = "REPLY_MESSAGE_THREAD_ID"
+        const val LEAVE_THREAD = "LEAVE_THREAD"
+        const val MUTE_THREAD = "MUTE_THREAD"
+        const val UNMUTE_THREAD = "UNMUTE_THREAD"
+        const val DELETE_MESSAGE = "DELETE_MESSAGE"
+        const val DELETE_MESSAGE_ID = "DELETE_MESSAGE_ID"
+        const val EDIT_MESSAGE = "EDIT_MESSAGE"
+        const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
     }
 
-    @StringDef(UPDATE_CONTACT,
+    @StringDef(
+        UPDATE_CONTACT,
         GET_THREAD
-        ,ADD_CONTACT
-        ,UNBLOCK_CONTACT
-        ,BLOCK_CONTACT
-        ,GET_CONTACT
-        ,CREATE_THREAD
-        ,CREATE_THREAD_CHANNEL,
+        , ADD_CONTACT
+        , UNBLOCK_CONTACT
+        , BLOCK_CONTACT
+        , GET_CONTACT
+        , CREATE_THREAD
+        , CREATE_THREAD_CHANNEL,
         CREATE_THREAD_CHANNEL_GROUP,
         CREATE_THREAD_PUBLIC_GROUP,
         CREATE_THREAD_OWNER_GROUP,
@@ -49,8 +56,14 @@ class ConstantMsgType {
         REPLY_MESSAGE_ID,
         REPLY_MESSAGE_THREAD_ID,
         LEAVE_THREAD,
-        REMOVE_CONTACT
-        )
+        UNMUTE_THREAD,
+        MUTE_THREAD,
+        REMOVE_CONTACT,
+        DELETE_MESSAGE_ID,
+        EDIT_MESSAGE_ID,
+        EDIT_MESSAGE,
+        DELETE_MESSAGE
+    )
 
     @Retention(AnnotationRetention.SOURCE)
     annotation class CONSTANT

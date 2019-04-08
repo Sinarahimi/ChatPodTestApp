@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
 import com.fanap.podchat.mainmodel.Invitee
+import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
@@ -109,6 +110,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onLeaveThread(response)
             }
 
+            override fun onMuteThread(content: String?, response: ChatResponse<ResultMute>?) {
+                super.onMuteThread(content, response)
+                testListener.onMuteThread(response)
+            }
+
+            override fun onUnmuteThread(content: String?, response: ChatResponse<ResultMute>?) {
+                super.onUnmuteThread(content, response)
+                testListener.onUnmuteThread(response)
+            }
+
+            override fun onDeleteMessage(content: String?, response: ChatResponse<ResultDeleteMessage>?) {
+                super.onDeleteMessage(content, response)
+                testListener.onDeleteMessage(response)
+            }
+
+            override fun onEditedMessage(content: String?, response: ChatResponse<ResultNewMessage>?) {
+                super.onEditedMessage(content, response)
+                testListener.onEditedMessage(response)
+            }
+
+            override fun onGetHistory(content: String?, response: ChatResponse<ResultHistory>?) {
+                super.onGetHistory(content, response)
+                testListener.onGetHistory(response)
+            }
+
         })
     }
 
@@ -126,6 +152,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onUserInfo(content, response)
             }
         })
+    }
+
+    fun getHistory(requestGetHistory: RequestGetHistory): String {
+        return chat.getHistory(requestGetHistory, null)
+
+    }
+
+    fun editMessage(requestEditMessage: RequestEditMessage): String {
+        return chat.editMessage(requestEditMessage, null)
+    }
+
+    fun muteThread(requestMuteThread: RequestMuteThread): String {
+        return chat.muteThread(requestMuteThread, null)
+    }
+
+    fun unMuteThread(requestMuteThread: RequestMuteThread): String {
+        return chat.unMuteThread(requestMuteThread, null)
     }
 
     //    * createThreadTypes = {
@@ -147,7 +190,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         image: String,
         metadata: String
     ): String {
-        return chat.createThread(threadType,invitee,threadTitle,description,image,metadata,null)
+        return chat.createThread(threadType, invitee, threadTitle, description, image, metadata, null)
     }
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
@@ -198,6 +241,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun unBlock(requestUnBlock: RequestUnBlock): String {
         return chat.unblock(requestUnBlock, null)
+    }
+
+    fun deleteMessage(requestDeleteMessage: RequestDeleteMessage): String {
+        return chat.deleteMessage(requestDeleteMessage, null)
     }
 
     fun getThread(requestThread: RequestThread): String {

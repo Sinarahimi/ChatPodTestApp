@@ -1,5 +1,6 @@
 package ir.fanap.chattestapp.application.ui
 
+import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 
 interface TestListener {
@@ -26,6 +27,31 @@ interface TestListener {
     }
 
     fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
+
+
+    }
+
+    fun onUnmuteThread(response: ChatResponse<ResultMute>?) {
+
+
+    }
+
+    fun onMuteThread(response: ChatResponse<ResultMute>?) {
+
+
+    }
+
+    fun onDeleteMessage(response: ChatResponse<ResultDeleteMessage>?) {
+
+
+    }
+
+    fun onEditedMessage(response: ChatResponse<ResultNewMessage>?) {
+
+
+    }
+
+    fun onGetHistory(response: ChatResponse<ResultHistory>?) {
 
 
     }
