@@ -52,7 +52,7 @@
                     android:id="@+id/tab_chat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tab_chat"/>
+                    android:text="@string/tab_function"/>
 
             <android.support.design.widget.TabItem
                     android:id="@+id/tab_function"
@@ -64,7 +64,7 @@
                     android:id="@+id/tab_log"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tab_function"/>
+                    android:text="@string/tab_chat"/>
         </android.support.design.widget.TabLayout>
     </android.support.v4.view.ViewPager>
 

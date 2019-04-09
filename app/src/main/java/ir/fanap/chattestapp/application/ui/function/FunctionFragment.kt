@@ -30,6 +30,7 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.bussines.model.Method
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_HISTORY
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncFour
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncOne
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncThree
@@ -125,26 +126,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             18 -> {
                 editMessage()
             }
+            19 -> {
+                getHistory()
+            }
         }
     }
 
-    private fun editMessage() {
-        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        val uniqueId = mainViewModel.getContact(requestGetContact)
-        fucCallback[ConstantMsgType.EDIT_MESSAGE] = uniqueId
-
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
     }
 
-    private fun deleteMessage() {
-        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        val uniqueId = mainViewModel.getContact(requestGetContact)
-        fucCallback[ConstantMsgType.DELETE_MESSAGE] = uniqueId
-
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_function, container, false)
         buttonCoonect = view.findViewById(R.id.button_Connect)
         recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
@@ -159,7 +151,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         }
 
-        for (i in 0..18) {
+        for (i in 0..19) {
             val method = Method()
             method.methodName = methodNames[i]
             method.funcOne = methodFuncOne[i]
@@ -178,13 +170,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         return view
     }
 
-    override fun onBlockList(response: ChatResponse<ResultBlockList>?) {
-        super.onBlockList(response)
-        var position = 5
-        changeIconReceive(position)
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
@@ -201,9 +186,30 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
+    private fun getHistory() {
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+        val uniqueId = mainViewModel.getContact(requestGetContact)
+        fucCallback[ConstantMsgType.GET_HISTORY] = uniqueId
+    }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
+    private fun editMessage() {
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+        val uniqueId = mainViewModel.getContact(requestGetContact)
+        fucCallback[ConstantMsgType.EDIT_MESSAGE] = uniqueId
+
+    }
+
+    private fun deleteMessage() {
+        val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
+        val uniqueId = mainViewModel.getContact(requestGetContact)
+        fucCallback[ConstantMsgType.DELETE_MESSAGE] = uniqueId
+
+    }
+
+    override fun onBlockList(response: ChatResponse<ResultBlockList>?) {
+        super.onBlockList(response)
+        var position = 5
+        changeIconReceive(position)
     }
 
     override fun onError(chatResponse: ErrorOutPut?) {
@@ -414,9 +420,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     }
 
+    override fun onGetHistory(response: ChatResponse<ResultHistory>?) {
+        super.onGetHistory(response)
+        if (fucCallback[ConstantMsgType.GET_HISTORY] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.GET_HISTORY)
+            val position = 19
+            changeIconReceive(position)
+        }
+    }
+
     override fun onCreateThread(response: ChatResponse<ResultThread>?) {
         super.onCreateThread(response)
 
+        if (fucCallback[ConstantMsgType.GET_HISTORY] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.GET_HISTORY)
+            val threadId = response!!.result.thread.id
+            val requestGetHistory = RequestGetHistory.Builder(threadId).build()
+            fucCallback[ConstantMsgType.GET_HISTORY] = mainViewModel.getHistory(requestGetHistory)
+        }
 
         if (fucCallback[ConstantMsgType.UNMUTE_THREAD] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.UNMUTE_THREAD)
@@ -573,6 +594,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onGetContact(response)
         val contactList = response?.result?.contacts
 
+        if (fucCallback[GET_HISTORY] == response?.uniqueId) {
+            fucCallback.remove(ConstantMsgType.GET_HISTORY)
+            handleGetHistory(contactList)
+        }
+
         if (fucCallback[ConstantMsgType.EDIT_MESSAGE] == response?.uniqueId) {
             fucCallback.remove(ConstantMsgType.DELETE_MESSAGE)
             handleEditMessage(contactList)
@@ -646,6 +672,39 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             // STORE THE MESSAGE ID
             //
         }
+    }
+
+    private fun handleGetHistory(contactList: ArrayList<Contact>?) {
+
+        if (contactList != null) {
+            var choose = 0
+            for (contact: Contact in contactList) {
+                if (contact.isHasUser) {
+                    choose++
+                    if (choose == 1) {
+                        val contactId = contact.id
+
+                        val inviteList = ArrayList<Invitee>()
+                        inviteList.add(Invitee(contactId, 1))
+//                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+//                        val requestCreateThread: RequestCreateThread =
+//                            RequestCreateThread.Builder(0, inviteList)
+//                                .message(requestThreadInnerMessage)
+//                                .build()
+                        val list = Array<Invitee>(1) { Invitee(inviteList[0].id, 2) }
+
+                        val uniqueId = mainViewModel.createThread(
+                            ThreadType.Constants.NORMAL, list, "nothing", ""
+                            , "", ""
+                        )
+
+                        fucCallback[ConstantMsgType.GET_HISTORY] = uniqueId
+                    }
+                    break
+                }
+            }
+        }
+
     }
 
     private fun handleEditMessage(contactList: ArrayList<Contact>?) {

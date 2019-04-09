@@ -156,7 +156,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getHistory(requestGetHistory: RequestGetHistory): String {
         return chat.getHistory(requestGetHistory, null)
-
     }
 
     fun editMessage(requestEditMessage: RequestEditMessage): String {

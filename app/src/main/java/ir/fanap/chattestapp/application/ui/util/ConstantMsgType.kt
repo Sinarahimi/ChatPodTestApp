@@ -33,6 +33,7 @@ class ConstantMsgType {
         const val DELETE_MESSAGE_ID = "DELETE_MESSAGE_ID"
         const val EDIT_MESSAGE = "EDIT_MESSAGE"
         const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
+        const val GET_HISTORY = "GET_HISTORY"
     }
 
     @StringDef(
