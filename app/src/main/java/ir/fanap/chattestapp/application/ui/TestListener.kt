@@ -55,4 +55,14 @@ interface TestListener {
 
 
     }
+
+    fun onNewMessage(response: ChatResponse<ResultNewMessage>?) {
+
+
+    }
+
+    fun onGetThreadParticipant(response: ChatResponse<ResultParticipant>?) {
+
+
+    }
 }

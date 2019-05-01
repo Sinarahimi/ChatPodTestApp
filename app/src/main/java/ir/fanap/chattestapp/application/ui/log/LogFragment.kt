@@ -34,9 +34,7 @@ class LogFragment : Fragment(), TestListener {
         recyclerView.adapter = logAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
-        linearLayoutManager.reverseLayout = true
         recyclerView.scrollToPosition(logs.size - 1)
-
 
         return view
     }

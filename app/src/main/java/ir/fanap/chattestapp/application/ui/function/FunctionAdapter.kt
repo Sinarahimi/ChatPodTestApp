@@ -1,6 +1,8 @@
 package ir.fanap.chattestapp.application.ui.function
 
 import android.content.Context
+import android.support.v4.app.FragmentActivity
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,7 +12,11 @@ import android.widget.TextView
 import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.bussines.model.Method
 
-class FunctionAdapter(private val methods: MutableList<Method>, private val viewHolderListener1: ViewHolderListener) :
+class FunctionAdapter(
+    private val context: FragmentActivity,
+    private val methods: MutableList<Method>,
+    private val viewHolderListener1: ViewHolderListener
+) :
     RecyclerView.Adapter<FunctionAdapter.ViewHolder>() {
 
     private val viewHolderListener: ViewHolderListener = viewHolderListener1
@@ -25,35 +31,96 @@ class FunctionAdapter(private val methods: MutableList<Method>, private val view
         viewHolder.textViewFuncFour.text = methods[position].funcFour
         viewHolder.buttonRun.tag = position
 
+        if (methods[position].methodNameFlag == true) {
+
+            context.runOnUiThread {
+                viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
+            }
+
+            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBox
+                .setImageResource(R.drawable.ic_done_black_24dp)
+            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
+
+        }
+
+
+        if (methods[position].funcOneFlag == true) {
+            viewHolder.checkBoxOne
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxOne
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxOne
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+
+        if (methods[position].funcTwoFlag == true) {
+            viewHolder.checkBoxSec
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxSec
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxSec
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+        if (methods[position].funcThreeFlag == true) {
+            viewHolder.checkBoxThird
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxThird
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxThird
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+        if (methods[position].funcFourFlag == true) {
+            viewHolder.checkBoxFourth
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxFourth
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxFourth
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+
         if (!viewHolder.textViewFuncOne.text.isEmpty()) {
             viewHolder.checkBoxOne.visibility = View.VISIBLE
-            viewHolder.textViewFuncOne.visibility =  View.VISIBLE
-        }else{
+            viewHolder.textViewFuncOne.visibility = View.VISIBLE
+        } else {
             viewHolder.checkBoxOne.visibility = View.GONE
-            viewHolder.textViewFuncOne.visibility =  View.GONE
+            viewHolder.textViewFuncOne.visibility = View.GONE
         }
         if (!viewHolder.textViewFuncTwo.text.isEmpty()) {
             viewHolder.checkBoxSec.visibility = View.VISIBLE
-            viewHolder.textViewFuncTwo.visibility =  View.VISIBLE
-        }else{
+            viewHolder.textViewFuncTwo.visibility = View.VISIBLE
+        } else {
             viewHolder.checkBoxSec.visibility = View.GONE
-            viewHolder.textViewFuncTwo.visibility =  View.GONE
+            viewHolder.textViewFuncTwo.visibility = View.GONE
         }
 
         if (!viewHolder.textViewFuncThree.text.isEmpty()) {
             viewHolder.checkBoxThird.visibility = View.VISIBLE
-            viewHolder.textViewFuncThree.visibility =  View.VISIBLE
-        }else{
+            viewHolder.textViewFuncThree.visibility = View.VISIBLE
+        } else {
             viewHolder.checkBoxThird.visibility = View.GONE
-            viewHolder.textViewFuncThree.visibility =  View.GONE
+            viewHolder.textViewFuncThree.visibility = View.GONE
         }
 
         if (!viewHolder.textViewFuncFour.text.isEmpty()) {
             viewHolder.checkBoxFourth.visibility = View.VISIBLE
-            viewHolder.textViewFuncFour.visibility =  View.VISIBLE
-        }else{
+            viewHolder.textViewFuncFour.visibility = View.VISIBLE
+        } else {
             viewHolder.checkBoxFourth.visibility = View.GONE
-            viewHolder.textViewFuncFour.visibility =  View.GONE
+            viewHolder.textViewFuncFour.visibility = View.GONE
         }
     }
 
@@ -93,7 +160,7 @@ class FunctionAdapter(private val methods: MutableList<Method>, private val view
         val textViewFuncThree: TextView = itemView.findViewById(R.id.textView_FunThree)
         val textViewFuncFour: TextView = itemView.findViewById(R.id.textView_FunFour)
         val txtViewMethod: TextView = itemView.findViewById(R.id.textView_method)
-        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_test)
+        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_ufil)
         val checkBoxOne: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFirst)
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
@@ -115,5 +182,9 @@ class FunctionAdapter(private val methods: MutableList<Method>, private val view
 
     interface ViewHolderListener {
         fun onIconClicked(clickedViewHolder: ViewHolder)
+    }
+
+    interface ICheckChangeListener {
+        fun onItemMethodChecked(position: Int, value: Boolean)
     }
 }

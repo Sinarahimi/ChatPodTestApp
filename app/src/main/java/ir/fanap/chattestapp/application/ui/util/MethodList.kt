@@ -24,7 +24,9 @@ class MethodList {
                 "16 Un Mute Thread",
                 "17 Delete Message",
                 "18 Edit Message",
-                "19 Get history"
+                "19 Get history",
+                "20 Create Thread with ForwardMsg",
+                "21 Get thread Participant"
             )
 
 
@@ -49,7 +51,9 @@ class MethodList {
                 "",//16
                 "",//17
                 "",//18
-                ""
+                "",//19
+                "onSent",
+                ""//21
             )
 
         val methodFuncTwo: MutableList<String> =
@@ -73,7 +77,9 @@ class MethodList {
                 "",//16
                 "",//17
                 "",//18
-                ""//19
+                "",//19
+                "",
+                ""//21
             )
 
         val methodFuncThree: MutableList<String> =
@@ -97,7 +103,9 @@ class MethodList {
                 "",//16
                 "",//17
                 "",//18
-                ""//19
+                "",//19
+                "",
+                ""//21
             )
 
         val methodFuncFour: MutableList<String> =
@@ -121,7 +129,9 @@ class MethodList {
                 "",//16
                 "",//17
                 "",//18
-                ""//19
+                "",//19
+                "",
+                ""//21
             )
     }
 }

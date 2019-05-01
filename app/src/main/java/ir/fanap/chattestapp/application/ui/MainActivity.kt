@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_bubble)
         val titles = arrayOf("chat", "Function", "Log")
         val viewPager: ViewPager = findViewById(R.id.view_pager)
-
         val pagerAdapter = PagerAdapter(supportFragmentManager, titles)
 
         viewPager.adapter = pagerAdapter

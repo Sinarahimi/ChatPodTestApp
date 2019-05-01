@@ -3,15 +3,18 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:background="@drawable/ic_subtle_stripes"
         android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout
             android:id="@+id/constraint_text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:background="@drawable/bg_chat_edit_text"
-            android:layout_height="50dp" tools:layout_editor_absoluteY="665dp"
-            tools:layout_editor_absoluteX="36dp">
+            android:layout_height="60dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="16dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.666" app:layout_constraintVertical_bias="1.0">
 
         <android.support.v7.widget.AppCompatImageView
                 app:srcCompat="@drawable/ic_round_mic_none_24px"
@@ -43,11 +46,360 @@
         />
     </android.support.constraint.ConstraintLayout>
     <include
+            android:id="@+id/ccv_attachment_reveal"
             layout="@layout/item_atach"
-            android:layout_height="100dp"
-            android:layout_width="400dp"
-            app:layout_constraintStart_toStartOf="@+id/constraint_text"
-            app:layout_constraintEnd_toEndOf="@+id/constraint_text" android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="1.0" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/constraint_text"/>
+            android:layout_height="120dp"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="28dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraint_text"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            tools:layout_editor_absoluteX="5dp"/>
+
+    <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="0dp" android:layout_marginTop="40dp"
+            app:layout_constraintTop_toTopOf="parent" android:id="@+id/constraintLayout">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/buttonRunFileMsg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_round_play_circle_outline_24px"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg"
+                android:layout_marginEnd="8dp"/>
+
+        <TextView
+                android:id="@+id/TxtViewFileMsg"
+                android:text="Send File Message"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="275dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="@+id/guideline_sfilemsg"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/checkBox_Send_File_Msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_done_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <ProgressBar
+                android:id="@+id/progress_sfilemsg"
+                android:layout_width="0dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/guideline_sfilemsg"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_sfilemsg_Right"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        <View
+                android:id="@+id/view_sfilemsg"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="@id/guideline_sfilemsg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_sfilemsg_Right"
+        />
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_sfilemsg_Right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.90"/>
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_sfilemsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="74dp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            tools:layout_editor_absoluteX="0dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" android:id="@+id/constraintLayout2">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/buttonRun"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_round_play_circle_outline_24px"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_UploadFile"
+                android:layout_marginEnd="8dp"/>
+
+
+        <TextView
+                android:id="@+id/TxtViewUploadFile"
+                android:text="Upload File"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="275dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_UploadFile"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/checkBox_Upload_File"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                app:srcCompat="@drawable/ic_done_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp" android:layout_marginTop="16dp"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <ProgressBar
+                android:id="@+id/progress_UploadFile"
+                android:layout_width="0dp"
+                android:padding="1dp"
+                android:progressDrawable="@drawable/round_corner_progressbar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_height="8dp"
+                app:layout_constraintStart_toStartOf="@+id/guideline_UploadFile"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_UploadFile_Right"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <View
+                android:id="@+id/view_UploadFile"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="@id/guideline_UploadFile"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_UploadFile_Right"
+        />
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_UploadFile_Right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.90"/>
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_UploadFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="74dp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="0dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" android:id="@+id/constraintLayout3">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/button_Reply_File_Msg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_round_play_circle_outline_24px"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_Reply_File_Msg"
+                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <TextView
+                android:id="@+id/TxtViewReplyFileMsg"
+                android:text="Reply File Message"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="275dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/checkBox_Reply_File_Msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:srcCompat="@drawable/ic_done_black_24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"/>
+
+        <ProgressBar
+                android:id="@+id/progress_Reply_File_Msg"
+                android:layout_width="0dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/guideline_Reply_File_Msg"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_Reply_File_Msg_Right"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        <View
+                android:id="@+id/view_Reply_File_Msg"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="@id/guideline_Reply_File_Msg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_Reply_File_Msg_Right"
+        />
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_Reply_File_Msg_Right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.90"/>
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_Reply_File_Msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="74dp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="0dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/buttonUploadImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@drawable/ic_round_play_circle_outline_24px"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_uploadImage"
+                android:layout_marginEnd="8dp"/>
+
+
+        <TextView
+                android:id="@+id/TxtViewUploadImage"
+                android:text="Upload Image"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="275dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_uploadImage"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/checkBox_ufil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:srcCompat="@drawable/ic_done_black_24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"/>
+
+        <ProgressBar
+                android:id="@+id/progress_ufileimg"
+                android:layout_width="0dp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/guideline_uploadImage"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_uploadImage_right"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <View
+                android:id="@+id/view_Upload_Image"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="@id/guideline_uploadImage"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_uploadImage_right"
+        />
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_uploadImage_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.90"/>
+
+        <android.support.constraint.Guideline
+                android:id="@+id/guideline_uploadImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="74dp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+
 </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,9 @@ package ir.fanap.chattestapp.application.ui
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.net.Uri
+import android.support.v4.app.FragmentActivity
+import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
 import com.fanap.podchat.chat.ChatListener
 import com.fanap.podchat.mainmodel.Invitee
@@ -9,6 +12,7 @@ import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import rx.subjects.PublishSubject
+import java.util.*
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,6 +27,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onChatState(state: String?) {
                 super.onChatState(state)
                 observable.onNext(state)
+            }
+
+            override fun onGetThreadParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
+                super.onGetThreadParticipant(content, response)
+                testListener.onGetThreadParticipant(response)
+            }
+
+            override fun onNewMessage(content: String?, response: ChatResponse<ResultNewMessage>?) {
+                super.onNewMessage(content, response)
+                testListener.onNewMessage(response)
+
             }
 
             override fun onError(content: String?, OutPutError: ErrorOutPut?) {
@@ -154,6 +169,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
+    fun uploadFile(requestUploadFile: RequestUploadFile): String {
+        return chat.uploadFile(requestUploadFile)
+    }
+
+    fun uploadImage(activity: FragmentActivity?, uri: Uri?): String {
+        return chat.uploadImage(activity, uri)
+    }
+
+    fun sendFileMessage(requestFileMessage: RequestFileMessage, objects: ProgressHandler.sendFileMessage): String {
+        return chat.sendFileMessage(requestFileMessage, objects)
+    }
+
+    fun replyWithFile(requestReplyMessage: RequestReplyFileMessage, objects: ProgressHandler.sendFileMessage): String {
+        return chat.replyFileMessage(requestReplyMessage, objects)
+    }
+
     fun getHistory(requestGetHistory: RequestGetHistory): String {
         return chat.getHistory(requestGetHistory, null)
     }
@@ -219,20 +250,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.removeContact(requestRemoveContact)
     }
 
-    fun showLog() {
-//        var handler: Handler? = null
-//
-//        handler?.post {
-//            val process: Process = Runtime.getRuntime().exec("logcat -d")
-//            val bufferedReader: BufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-//            var log: StringBuilder = java.lang.StringBuilder()
-//            var line = bufferedReader.readLine()
-//            while ((line) != null) {
-//                log.append(line)
-//                observableLog.onNext(log.toString())
-//            }
-//        }
-    }
 
     fun blockContact(requestBlock: RequestBlock): String {
         return chat.block(requestBlock, null)
@@ -276,5 +293,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun leaveThread(requestLeaveThread: RequestLeaveThread): String {
         return chat.leaveThread(requestLeaveThread, null)
+    }
+
+    fun getParticipant(requestThreadParticipant: RequestThreadParticipant):String{
+        return chat.getThreadParticipants(requestThreadParticipant,null)
     }
 }

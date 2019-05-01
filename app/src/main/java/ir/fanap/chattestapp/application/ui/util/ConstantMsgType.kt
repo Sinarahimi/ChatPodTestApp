@@ -34,6 +34,12 @@ class ConstantMsgType {
         const val EDIT_MESSAGE = "EDIT_MESSAGE"
         const val EDIT_MESSAGE_ID = "EDIT_MESSAGE_ID"
         const val GET_HISTORY = "GET_HISTORY"
+        const val SEND_FILE_MESSAGE = "SEND_FILE_MESSAGE"
+        const val REPLY_FILE_MESSAGE = "REPLY_FILE_MESSAGE"
+        const val CREATE_THREAD_WITH_FORW_MSG = "CREATE_THREAD_WITH_FORW_MSG"
+        const val CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID = "CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID"
+        const val CREATE_THREAD_WITH_FORW_MSG_ID = "CREATE_THREAD_WITH_FORW_MSG_ID"
+        const val GET_PARTICIPANT = "GET_PARTICIPANT"
     }
 
     @StringDef(
@@ -63,6 +69,10 @@ class ConstantMsgType {
         DELETE_MESSAGE_ID,
         EDIT_MESSAGE_ID,
         EDIT_MESSAGE,
+        REPLY_FILE_MESSAGE,
+        CREATE_THREAD_WITH_FORW_MSG,
+        CREATE_THREAD_WITH_FORW_MSG_ID,
+        GET_PARTICIPANT,
         DELETE_MESSAGE
     )
 
