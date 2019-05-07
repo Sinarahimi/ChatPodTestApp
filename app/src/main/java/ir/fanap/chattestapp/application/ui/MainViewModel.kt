@@ -2,6 +2,7 @@ package ir.fanap.chattestapp.application.ui
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.content.Context
 import android.net.Uri
 import android.support.v4.app.FragmentActivity
 import com.fanap.podchat.ProgressHandler
@@ -177,6 +178,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.uploadImage(activity, uri)
     }
 
+    fun uploadImageProgress(
+        context: Context,
+        activity: FragmentActivity?,
+        uri: Uri?,
+        progress: ProgressHandler.onProgress
+    ): String {
+        return chat.uploadImageProgress(context, activity, uri, progress)
+    }
+
     fun sendFileMessage(requestFileMessage: RequestFileMessage, objects: ProgressHandler.sendFileMessage): String {
         return chat.sendFileMessage(requestFileMessage, objects)
     }
@@ -224,7 +234,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun createThreadWithMessage(requestCreateThread: RequestCreateThread): ArrayList<String>? {
-        return chat.createThread(requestCreateThread)
+        return chat.createThreadWithMessage(requestCreateThread)
     }
 
     fun updateContact(requestUpdateContact: RequestUpdateContact): String {
@@ -295,7 +305,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.leaveThread(requestLeaveThread, null)
     }
 
-    fun getParticipant(requestThreadParticipant: RequestThreadParticipant):String{
-        return chat.getThreadParticipants(requestThreadParticipant,null)
+    fun getParticipant(requestThreadParticipant: RequestThreadParticipant): String {
+        return chat.getThreadParticipants(requestThreadParticipant, null)
     }
 }

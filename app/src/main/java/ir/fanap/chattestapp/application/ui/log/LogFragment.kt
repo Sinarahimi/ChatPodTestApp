@@ -1,7 +1,8 @@
 package ir.fanap.chattestapp.application.ui.log
 
-import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -28,20 +29,37 @@ class LogFragment : Fragment(), TestListener {
 
         val view: View = inflater.inflate(R.layout.fragment_log, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerV_funcLog)
+        val floatingActionButton: FloatingActionButton = view.findViewById(R.id.fActionButton)
         recyclerView.setHasFixedSize(true)
 
         logAdapter = LogAdapter(logs)
         recyclerView.adapter = logAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
-        recyclerView.scrollToPosition(logs.size - 1)
 
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && floatingActionButton.visibility == View.VISIBLE) {
+                    floatingActionButton.hide()
+                } else if (dy < 0 && floatingActionButton.visibility != View.VISIBLE) {
+                    floatingActionButton.show()
+                }
+
+            }
+        })
+
+        floatingActionButton.setOnClickListener {
+            recyclerView.scrollToPosition(logs.size - 1)
+        }
         return view
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
+            .create(MainViewModel::class.java)
         mainViewModel.setTestListener(this)
 
     }

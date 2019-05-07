@@ -8,7 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import ir.fanap.chattestapp.R
 import android.animation.Animator
-import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.ViewModelProvider
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
@@ -16,6 +17,7 @@ import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
 import android.support.v4.content.ContextCompat
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
@@ -37,6 +39,7 @@ class ChatFragment : Fragment(), TestListener {
     private var fucCallback: HashMap<String, String> = hashMapOf()
     private val REQUEST_TAKE_PHOTO = 0
     private val REQUEST_SELECT_IMAGE_IN_ALBUM = 1
+    private lateinit var contextFrag: Context
     private var imageUrl: Uri? = null
     private lateinit var txtViewFileMsg: TextView
     private lateinit var txtViewUploadFile: TextView
@@ -46,6 +49,10 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imageView_tickTwo: AppCompatImageView
     private lateinit var imageView_tickThree: AppCompatImageView
     private lateinit var imageView_tickFour: AppCompatImageView
+    private lateinit var prgressbarUploadImg: ProgressBar
+    private lateinit var buttonUploadImage: AppCompatImageView
+
+
     private val faker: Faker = Faker()
 
     companion object {
@@ -56,6 +63,11 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        contextFrag  = context!!
     }
 
     /*private <T extends View & CircularRevealWidget> void circularRevealFromMiddle(@NonNull final T circularRevealWidget) {
@@ -87,6 +99,8 @@ class ChatFragment : Fragment(), TestListener {
         imageView_tickThree = view.findViewById(R.id.checkBox_Reply_File_Msg)
         imageView_tickFour = view.findViewById(R.id.checkBox_ufil)
 
+        buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
+
         txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
         txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
         txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
@@ -95,9 +109,11 @@ class ChatFragment : Fragment(), TestListener {
 
         txtViewFileMsg.setOnClickListener { fileMsg() }
         txtViewUploadFile.setOnClickListener { uploadFile() }
-        txtViewUploadImage.setOnClickListener { uploadImage() }
+        buttonUploadImage.setOnClickListener { uploadImage() }
         txtViewReplyFileMsg.setOnClickListener { replyFileMsg() }
 
+
+        prgressbarUploadImg = view.findViewById(R.id.progress_ufileimg)
 
         val appCmpImgViewFolder: AppCompatImageView = view.findViewById(R.id.appCompatImageView_folder)
 
@@ -178,10 +194,10 @@ class ChatFragment : Fragment(), TestListener {
             val messageId = response?.result?.messageId
             val threadId = fucCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]
             val replyFileMessage = RequestReplyFileMessage
-                    .Builder("this is replyMessage", threadId?.toLong()!!, messageId!!,imageUrl,activity)
-                    .build()
+                .Builder("this is replyMessage", threadId?.toLong()!!, messageId!!, imageUrl, activity)
+                .build()
             fucCallback[ConstantMsgType.REPLY_FILE_MESSAGE] = mainViewModel
-                .replyWithFile(replyFileMessage,object : ProgressHandler.sendFileMessage{
+                .replyWithFile(replyFileMessage, object : ProgressHandler.sendFileMessage {
                     override fun onFinishImage(json: String?, chatResponse: ChatResponse<ResultImageFile>?) {
                         super.onFinishImage(json, chatResponse)
                         imageView_tickFour.setImageResource(R.drawable.ic_round_done_all_24px)
@@ -203,7 +219,8 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application).create(MainViewModel::class.java)
+
         mainViewModel.setTestListener(this)
     }
 
@@ -255,7 +272,7 @@ class ChatFragment : Fragment(), TestListener {
 
                         val inviteList = ArrayList<Invitee>()
                         inviteList.add(Invitee(contactId, 1))
-                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder(faker.music().genre()).build()
+                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                         val requestCreateThread: RequestCreateThread =
                             RequestCreateThread.Builder(0, inviteList)
                                 .message(requestThreadInnerMessage)
@@ -313,8 +330,26 @@ class ChatFragment : Fragment(), TestListener {
 
     //Chat needs update
     fun uploadImage() {
+        mainViewModel.uploadImage(activity, imageUrl)
 
-        mainViewModel.uploadImage(activity,imageUrl)
+    }
+
+    fun uploadImageProgress() {
+        mainViewModel.uploadImageProgress(contextFrag, activity,imageUrl,object :ProgressHandler.onProgress{
+            override fun onProgressUpdate(
+                uniqueId: String?,
+                bytesSent: Int,
+                totalBytesSent: Int,
+                totalBytesToSend: Int
+            ) {
+                super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
+                prgressbarUploadImg.secondaryProgress = bytesSent
+            }
+
+            override fun onFinish(imageJson: String?, chatResponse: ChatResponse<ResultImageFile>?) {
+                super.onFinish(imageJson, chatResponse)
+            }
+        })
     }
 
     fun replyFileMsg() {

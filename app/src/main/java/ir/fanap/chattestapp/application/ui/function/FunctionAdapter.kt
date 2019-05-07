@@ -160,7 +160,7 @@ class FunctionAdapter(
         val textViewFuncThree: TextView = itemView.findViewById(R.id.textView_FunThree)
         val textViewFuncFour: TextView = itemView.findViewById(R.id.textView_FunFour)
         val txtViewMethod: TextView = itemView.findViewById(R.id.textView_method)
-        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_ufil)
+        val checkBox: AppCompatImageView = itemView.findViewById(R.id.checkBox_test)
         val checkBoxOne: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFirst)
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
