@@ -12,7 +12,8 @@
             android:layout_height="60dp"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginBottom="16dp" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.666" app:layout_constraintVertical_bias="1.0">
 
@@ -311,12 +312,15 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <!--
+    Upload image
+    -->
     <android.support.constraint.ConstraintLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
             tools:layout_editor_absoluteX="0dp" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
@@ -361,16 +365,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="16dp"/>
 
-        <ProgressBar
-                android:id="@+id/progress_ufileimg"
-                android:layout_width="0dp"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@+id/guideline_uploadImage"
-                app:layout_constraintEnd_toStartOf="@+id/guideline_uploadImage_right"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="2dp"
-                app:layout_constraintBottom_toBottomOf="parent"/>
 
         <View
                 android:id="@+id/view_Upload_Image"
@@ -398,5 +392,16 @@
 
     </android.support.constraint.ConstraintLayout>
 
+
+    <ProgressBar
+            android:id="@+id/progress_UploadImage"
+            android:layout_width="0dp"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_height="wrap_content"
+            android:max="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/ccv_attachment_reveal"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="ir.fanap.chattestapp">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="ir.fanap.chattestapp">
+
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_LOGS" tools:ignore="ProtectedPermissions"/>
+    <uses-permission
+            android:name="android.permission.READ_LOGS"
+            tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
@@ -14,7 +18,15 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+
         <activity android:name=".application.ui.MainActivity">
+            <!--<meta-data-->
+                    <!--android:name="android.app.searchable"-->
+                    <!--android:resource="@xml/searchable"/>-->
+
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SEARCH"/>-->
+            <!--</intent-filter>-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

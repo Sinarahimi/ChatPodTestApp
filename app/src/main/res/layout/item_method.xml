@@ -3,36 +3,62 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+
+    <android.support.v7.widget.AppCompatImageView
+            android:background="@drawable/background_top_method_item"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            android:id="@+id/appCompatImageView4"/>
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/buttonRun"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
             app:srcCompat="@drawable/ic_round_play_circle_outline_24px"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            android:layout_marginEnd="8dp"/>
+            app:layout_constraintStart_toStartOf="@+id/appCompatImageView4"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/appCompatImageView4"
+            app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView4"/>
 
+    <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgView_log"
+            app:srcCompat="@drawable/ic_round_keyboard_arrow_right_24px"
+            android:layout_width="40dp"
+            android:layout_height="40dp" app:layout_constraintEnd_toEndOf="@+id/appCompatImageView4"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView4"
+            app:layout_constraintTop_toTopOf="@+id/appCompatImageView4"/>
 
+    <!-- Progress bar -->
+    <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/progress_method"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_width="35dp" android:layout_height="35dp"
+            style="@style/Widget.AppCompat.ProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/buttonRun" app:layout_constraintStart_toStartOf="@+id/buttonRun"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonRun" app:layout_constraintTop_toTopOf="@+id/buttonRun"/>
     <TextView
             android:id="@+id/textView_method"
             android:layout_width="wrap_content"
-            android:layout_height="20sp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="275dp"
+            android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textStyle="bold"
             android:text="TextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
             android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintVertical_chainStyle="spread_inside"/>
+            app:layout_constraintTop_toTopOf="@+id/appCompatImageView4"
+            app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView4"/>
 
 
     <TextView
@@ -45,37 +71,36 @@
             tools:visibility="visible"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView_method"
-    />
+            app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_tickFirst"
+            app:layout_constraintHorizontal_bias="0.012" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView_FunTwo"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView_FunTwo"
             tools:text="textView_FunTwo"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="8dp"
             android:visibility="gone"
             tools:visibility="visible"
             android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/textView_FunOne"
-            tools:layout_editor_absoluteX="205dp"/>
+            app:layout_constraintStart_toStartOf="@+id/textView_FunThree"
+            app:layout_constraintEnd_toEndOf="@+id/textView_FunThree" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView_FunThree" app:layout_constraintHorizontal_bias="0.0"/>
 
     <TextView
             android:id="@+id/textView_FunThree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="textView_FunThree"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="8dp"
             android:visibility="gone"
             tools:visibility="visible"
             android:textSize="12sp"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/textView_FunTwo"
-            tools:layout_editor_absoluteX="205dp"/>
+            app:layout_constraintStart_toStartOf="@+id/textView_FunFour"
+            app:layout_constraintEnd_toEndOf="@+id/textView_FunFour" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView_FunFour"/>
 
 
     <TextView
@@ -83,49 +108,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="textView_FunThree"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="8dp"
             android:visibility="gone"
             tools:visibility="visible"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/textView_FunThree"
-            tools:layout_editor_absoluteX="205dp"/>
+            app:layout_constraintBottom_toTopOf="@+id/view" android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView_tickFourth" app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginBottom="8dp"/>
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/imageView_tickFirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:visibility="gone"
             tools:visibility="visible"
             app:srcCompat="@drawable/ic_done_black_24dp"
-            app:layout_constraintTop_toBottomOf="@+id/checkBox_test"
-            app:layout_constraintEnd_toStartOf="@+id/guideline1" android:layout_marginEnd="8dp"/>
+            app:layout_constraintEnd_toStartOf="@+id/guideline1"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatImageView4"/>
 
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/checkBox_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"
             app:srcCompat="@drawable/ic_done_black_24dp"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toStartOf="@+id/guideline1"
-            android:layout_marginEnd="8dp"/>
+            app:layout_constraintTop_toTopOf="@+id/appCompatImageView4"
+            app:layout_constraintBottom_toBottomOf="@+id/appCompatImageView4"
+            app:layout_constraintVertical_bias="0.576"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1" android:layout_marginEnd="8dp"/>
+
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/imageView_tickSec"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             tools:visibility="visible"
             app:srcCompat="@drawable/ic_done_black_24dp"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toBottomOf="@id/imageView_tickFirst"
             android:layout_marginEnd="8dp"
-            tools:layout_editor_absoluteY="88dp"/>
+    />
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/imageView_tickThird"
@@ -138,7 +166,7 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toBottomOf="@id/imageView_tickSec"
             android:layout_marginEnd="8dp"
-            tools:layout_editor_absoluteY="88dp"/>
+    />
 
     <android.support.v7.widget.AppCompatImageView
             android:id="@+id/imageView_tickFourth"
@@ -146,29 +174,29 @@
             android:visibility="gone"
             tools:visibility="visible"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
             app:srcCompat="@drawable/ic_done_black_24dp"
             app:layout_constraintEnd_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toBottomOf="@id/imageView_tickThird"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="4dp"
-            />
+    />
     <View
             android:id="@+id/view"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
+            android:background="@color/grey_light"
             app:layout_constraintStart_toStartOf="@id/guideline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline1"
-    />
+            android:layout_marginTop="8dp"
+            app:layout_constraintHorizontal_bias="0.0"/>
 
     <android.support.constraint.Guideline
             android:id="@+id/guideline1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.90"/>
+            app:layout_constraintGuide_percent="0.84"/>
 
     <android.support.constraint.Guideline
             android:id="@+id/guideline"

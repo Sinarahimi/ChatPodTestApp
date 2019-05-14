@@ -3,11 +3,27 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                  xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 xmlns:tools="http://schemas.android.com/tools"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent">
-    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbarLog"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/holo_green_light"
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerV_funcLog"
@@ -15,14 +31,18 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_margin="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-        />
+                android:layout_height="0dp"/>
 
         <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-        />
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_arrow_downward"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/recyclerV_funcLog"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerV_funcLog"
+                app:layout_constraintStart_toStartOf="@+id/recyclerV_funcLog"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

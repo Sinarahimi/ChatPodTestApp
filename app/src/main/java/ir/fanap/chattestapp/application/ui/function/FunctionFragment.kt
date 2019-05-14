@@ -3,6 +3,8 @@ package ir.fanap.chattestapp.application.ui.function
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatDelegate
@@ -10,10 +12,7 @@ import android.support.v7.widget.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.fanap.podchat.mainmodel.Contact
 import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.RequestThreadInnerMessage
@@ -22,6 +21,8 @@ import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
 import com.fanap.podchat.util.ThreadType
 import com.github.javafaker.Faker
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.wang.avi.AVLoadingIndicatorView
 import ir.fanap.chattestapp.BuildConfig
 import ir.fanap.chattestapp.R
@@ -46,12 +47,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var switchCompat_sandBox: SwitchCompat
     private lateinit var recyclerView: RecyclerView
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var appCompatImageView_noResponse: AppCompatImageView
+    private lateinit var txtView_noResponse: TextView
+
+
     private lateinit var avLoadingIndicatorView: AVLoadingIndicatorView
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var recyclerViewSmooth: RecyclerView.SmoothScroller
+    private lateinit var bottom_sheet_log: ConstraintLayout
+    private lateinit var bottomSheetLog: BottomSheetBehavior<ConstraintLayout>
+    private var gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private var methods: MutableList<Method> = mutableListOf()
     private var fucCallback: HashMap<String, String> = hashMapOf()
     private lateinit var textView_state: TextView
+    private lateinit var textView_log: TextView
     private lateinit var functionAdapter: FunctionAdapter
     private var sandbox = false
     private val faker: Faker = Faker()
@@ -65,6 +74,33 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         fun newInstance(): FunctionFragment {
             return FunctionFragment()
         }
+    }
+
+    override fun onLogClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
+        var position = clickedViewHolder.adapterPosition
+        if (textView_log.text.isEmpty()) {
+            appCompatImageView_noResponse.visibility = View.VISIBLE
+            txtView_noResponse.visibility = View.VISIBLE
+        }else{
+            appCompatImageView_noResponse.visibility = View.GONE
+            txtView_noResponse.visibility = View.GONE
+        }
+
+        bottomSheetLog.state = BottomSheetBehavior.STATE_EXPANDED
+        when (position) {
+            0 -> {
+//
+//                if (bottomSheetLog.state != null) {
+//                    Toast.makeText(activity, bottomSheetLog.state.toString(), Toast.LENGTH_SHORT).show()
+//                }
+            }
+            1 -> {
+                textView_log.text = methods[position].log
+            }
+
+
+        }
+
     }
 
     override fun onIconClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
@@ -145,11 +181,36 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_function, container, false)
-        buttonConect = view.findViewById(R.id.button_Connect)
-        recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
-        textView_state = view.findViewById(R.id.textView_state)
-        switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
-        avLoadingIndicatorView = view.findViewById(R.id.AVLoadingIndicatorView)
+        initView(view)
+
+        val button_close = view.findViewById(R.id.button_close) as Button
+
+        bottomSheetLog = BottomSheetBehavior.from<ConstraintLayout>(bottom_sheet_log)
+        bottomSheetLog.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(view: View, p1: Float) {
+
+            }
+
+            override fun onStateChanged(p0: View, state: Int) {
+                when (state) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+
+                    }
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+//                        textView_state.text = "close"
+                    }
+
+                }
+            }
+
+        })
+
+        button_close.setOnClickListener {
+            if (bottomSheetLog.state != BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetLog.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+
         recyclerView.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
@@ -181,11 +242,25 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         return view
     }
 
+    private fun initView(view: View) {
+        buttonConect = view.findViewById(R.id.button_Connect)
+        recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
+        textView_state = view.findViewById(R.id.textView_state)
+        switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
+        avLoadingIndicatorView = view.findViewById(R.id.AVLoadingIndicatorView)
+        bottom_sheet_log = view.findViewById(R.id.bottom_sheet_log)
+        textView_log = view.findViewById(R.id.textView_log)
+        appCompatImageView_noResponse = view.findViewById(R.id.appCompatImageView_noResponse)
+        txtView_noResponse = view.findViewById(R.id.TxtView_noResponse)
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application).create(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
+            .create(MainViewModel::class.java)
 //            .of(this).get(MainViewModel::class.java)
         mainViewModel.setTestListener(this)
         mainViewModel.observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
@@ -365,7 +440,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             methods[position].funcOneFlag = true
         }
     }
-
 
     override fun onSeen(response: ChatResponse<ResultMessage>?) {
         super.onSeen(response)
@@ -718,6 +792,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val position = 1
             changeIconReceive(position)
             methods[position].methodNameFlag = true
+            var json = gson.toJson(response?.result)
+            methods[position].log = json
         }
 
         if (fucCallback[ConstantMsgType.BLOCK_CONTACT] == response?.uniqueId) {
@@ -849,7 +925,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                         val inviteList = ArrayList<Invitee>()
                         inviteList.add(Invitee(contactId, 1))
-                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        val requestThreadInnerMessage =
+                            RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                         val requestCreateThread: RequestCreateThread =
                             RequestCreateThread.Builder(0, inviteList)
                                 .message(requestThreadInnerMessage)
@@ -875,7 +952,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                         val inviteList = ArrayList<Invitee>()
                         inviteList.add(Invitee(contactId, 1))
-                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        val requestThreadInnerMessage =
+                            RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                         val requestCreateThread: RequestCreateThread =
                             RequestCreateThread.Builder(0, inviteList)
                                 .message(requestThreadInnerMessage)
@@ -945,7 +1023,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -968,7 +1047,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -997,7 +1077,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -1056,7 +1137,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -1204,6 +1286,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         fucCallback[ConstantMsgType.GET_CONTACT] = uniqueId
+        var position = 1
+        changeIconSend(position)
     }
 
     private fun createThread() {
@@ -1273,7 +1357,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val contactId = contact.id
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -1305,7 +1390,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     val contactId = contact.id
                     val inviteList = ArrayList<Invitee>()
                     inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                    val requestThreadInnerMessage =
+                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                     val requestCreateThread: RequestCreateThread =
                         RequestCreateThread.Builder(0, inviteList)
                             .message(requestThreadInnerMessage)
@@ -1359,18 +1445,23 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         methods[position].methodNameFlag = true
         activity?.runOnUiThread {
             val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
-            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-                ?.setImageResource(R.drawable.ic_round_done_all_24px)
-            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
+//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+//                ?.setImageResource(R.drawable.ic_round_done_all_24px)
+//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+//                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
         }
     }
 
+    /* visibility of progress bar*/
     private fun changeIconSend(position: Int) {
         activity?.runOnUiThread {
+
             val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-                .setImageResource(R.drawable.ic_round_done_all_24px)
+            viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
+
+//            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
+//                .setImageResource(R.drawable.ic_round_done_all_24px)
         }
     }
 /*

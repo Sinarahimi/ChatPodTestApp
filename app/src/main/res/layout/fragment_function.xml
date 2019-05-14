@@ -1,87 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
-    <Button android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginTop="8dp"
-            android:id="@+id/button_Connect"
-            android:text="connect"
-            tools:layout_editor_absoluteX="115dp" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"/>
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              android:textSize="14sp"
-              android:text="SandBox"
-              android:id="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
-              android:layout_marginStart="16dp"
-              android:layout_marginTop="16dp"
-              app:layout_constraintTop_toTopOf="@+id/switchCompat_sandBox"
-              app:layout_constraintBottom_toBottomOf="@+id/switchCompat_sandBox"/>
+        <Button android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_marginTop="8dp"
+                android:id="@+id/button_Connect"
+                android:text="connect"
+                tools:layout_editor_absoluteX="115dp" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline2"
+                app:layout_constraintTop_toTopOf="@+id/guideline3"/>
 
-    <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switchCompat_sandBox"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_Connect"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
-            android:layout_marginStart="32dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:textSize="14sp"
+                  android:text="SandBox"
+                  android:id="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
+                  android:layout_marginStart="16dp"
+                  android:layout_marginTop="16dp"
+                  app:layout_constraintTop_toTopOf="@+id/switchCompat_sandBox"
+                  app:layout_constraintBottom_toBottomOf="@+id/switchCompat_sandBox"/>
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-              tools:text="connecting"
-              android:layout_margin="8dp"
-              android:id="@+id/textView_state"
-              app:layout_constraintBottom_toTopOf="@+id/guideline3"
-              android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
-              app:layout_constraintStart_toEndOf="@+id/appCompatImageView" android:layout_marginStart="8dp"/>
+        <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switchCompat_sandBox"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toTopOf="@+id/button_Connect"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                android:layout_marginStart="32dp"/>
 
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerV_funcFrag"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline2"
-            android:layout_margin="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="4dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  tools:text="connecting"
+                  android:layout_margin="8dp"
+                  android:id="@+id/textView_state"
+                  app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                  android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintStart_toEndOf="@+id/appCompatImageView" android:layout_marginStart="8dp"/>
 
-    <android.support.constraint.Guideline android:layout_width="wrap_content"
-                                          android:layout_height="wrap_content"
-                                          android:id="@+id/guideline2"
-                                          android:orientation="horizontal"
-                                          app:layout_constraintGuide_percent="0.21"/>
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerV_funcFrag"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline2"
+                android:background="#f5f5f5"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"/>
 
-    <android.support.constraint.Guideline android:layout_width="wrap_content"
-                                          android:layout_height="wrap_content"
-                                          android:id="@+id/guideline3"
-                                          android:orientation="horizontal"
-                                          app:layout_constraintGuide_begin="85dp"/>
+        <android.support.constraint.Guideline android:layout_width="wrap_content"
+                                              android:layout_height="wrap_content"
+                                              android:id="@+id/guideline2"
+                                              android:orientation="horizontal"
+                                              app:layout_constraintGuide_percent="0.21"/>
 
-    <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/AVLoadingIndicatorView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:indicatorName="BallPulseIndicator"
-            app:indicatorColor="@color/blue_active"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
-            tools:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintVertical_bias="0.333"/>
-    <android.support.v7.widget.AppCompatImageView android:layout_width="50dp" android:layout_height="50dp"
-                                                  android:src="@drawable/fanap_logo"
-                                                  app:layout_constraintStart_toStartOf="parent"
-                                                  android:layout_marginStart="16dp" android:layout_marginTop="16dp"
-                                                  app:layout_constraintTop_toTopOf="parent"
-                                                  android:id="@+id/appCompatImageView"/>
-</android.support.constraint.ConstraintLayout>
+        <android.support.constraint.Guideline android:layout_width="wrap_content"
+                                              android:layout_height="wrap_content"
+                                              android:id="@+id/guideline3"
+                                              android:orientation="horizontal"
+                                              app:layout_constraintGuide_begin="85dp"/>
+
+        <com.wang.avi.AVLoadingIndicatorView
+                android:id="@+id/AVLoadingIndicatorView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:indicatorName="BallPulseIndicator"
+                app:indicatorColor="@color/blue_active"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
+                tools:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline3"
+                app:layout_constraintVertical_bias="0.333"/>
+        <android.support.v7.widget.AppCompatImageView android:layout_width="50dp" android:layout_height="50dp"
+                                                      android:src="@drawable/fanap_logo"
+                                                      app:layout_constraintStart_toStartOf="parent"
+                                                      android:layout_marginStart="16dp" android:layout_marginTop="16dp"
+                                                      app:layout_constraintTop_toTopOf="parent"
+                                                      android:id="@+id/appCompatImageView"/>
+    </android.support.constraint.ConstraintLayout>
+
+    <include layout="@layout/bottom_sheet_log"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -12,6 +12,7 @@ import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
@@ -67,7 +68,7 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        contextFrag  = context!!
+        contextFrag = context!!
     }
 
     /*private <T extends View & CircularRevealWidget> void circularRevealFromMiddle(@NonNull final T circularRevealWidget) {
@@ -106,14 +107,16 @@ class ChatFragment : Fragment(), TestListener {
         txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
         txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
 
+        prgressbarUploadImg = view.findViewById(R.id.progress_UploadImage)
 
         txtViewFileMsg.setOnClickListener { fileMsg() }
         txtViewUploadFile.setOnClickListener { uploadFile() }
-        buttonUploadImage.setOnClickListener { uploadImage() }
+        buttonUploadImage.setOnClickListener {
+            //            uploadImage()
+            uploadImageProgress()
+        }
         txtViewReplyFileMsg.setOnClickListener { replyFileMsg() }
 
-
-        prgressbarUploadImg = view.findViewById(R.id.progress_ufileimg)
 
         val appCmpImgViewFolder: AppCompatImageView = view.findViewById(R.id.appCompatImageView_folder)
 
@@ -219,7 +222,8 @@ class ChatFragment : Fragment(), TestListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application).create(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
+            .create(MainViewModel::class.java)
 
         mainViewModel.setTestListener(this)
     }
@@ -272,7 +276,8 @@ class ChatFragment : Fragment(), TestListener {
 
                         val inviteList = ArrayList<Invitee>()
                         inviteList.add(Invitee(contactId, 1))
-                        val requestThreadInnerMessage = RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+                        val requestThreadInnerMessage =
+                            RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
                         val requestCreateThread: RequestCreateThread =
                             RequestCreateThread.Builder(0, inviteList)
                                 .message(requestThreadInnerMessage)
@@ -324,32 +329,56 @@ class ChatFragment : Fragment(), TestListener {
     }
 
     fun uploadFile() {
-        val requestUploadFile = RequestUploadFile.Builder(activity, imageUrl).build()
-        mainViewModel.uploadFile(requestUploadFile)
+        if (imageUrl != null) {
+
+            val requestUploadFile = RequestUploadFile.Builder(activity, imageUrl).build()
+            mainViewModel.uploadFile(requestUploadFile)
+        }
     }
 
     //Chat needs update
     fun uploadImage() {
-        mainViewModel.uploadImage(activity, imageUrl)
-
+        if (!imageUrl.toString().isEmpty()) {
+            mainViewModel.uploadImage(activity, imageUrl!!)
+        }
     }
 
     fun uploadImageProgress() {
-        mainViewModel.uploadImageProgress(contextFrag, activity,imageUrl,object :ProgressHandler.onProgress{
-            override fun onProgressUpdate(
-                uniqueId: String?,
-                bytesSent: Int,
-                totalBytesSent: Int,
-                totalBytesToSend: Int
-            ) {
-                super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
-                prgressbarUploadImg.secondaryProgress = bytesSent
-            }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            prgressbarUploadImg.setProgress(100, true)
+//        }
 
-            override fun onFinish(imageJson: String?, chatResponse: ChatResponse<ResultImageFile>?) {
-                super.onFinish(imageJson, chatResponse)
-            }
-        })
+
+        if (!imageUrl.toString().isEmpty()) {
+//            prgressbarUploadImg.max = 100
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                prgressbarUploadImg.setProgress(10, true)
+//            }
+            prgressbarUploadImg.incrementProgressBy(10)
+            mainViewModel.uploadImageProgress(contextFrag, activity, imageUrl, object : ProgressHandler.onProgress {
+                override fun onProgressUpdate(
+                    uniqueId: String?,
+                    bytesSent: Int,
+                    totalBytesSent: Int,
+                    totalBytesToSend: Int
+                ) {
+                    super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        prgressbarUploadImg.setProgress(bytesSent, true)
+//                    }
+                    prgressbarUploadImg.incrementProgressBy(bytesSent)
+                }
+
+                override fun onFinish(imageJson: String?, chatResponse: ChatResponse<ResultImageFile>?) {
+                    super.onFinish(imageJson, chatResponse)
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        prgressbarUploadImg.setProgress(50, true)
+//                    }
+                    prgressbarUploadImg.incrementProgressBy(100)
+
+                }
+            })
+        }
     }
 
     fun replyFileMsg() {

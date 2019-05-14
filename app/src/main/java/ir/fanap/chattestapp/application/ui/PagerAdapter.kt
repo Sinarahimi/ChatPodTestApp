@@ -29,7 +29,6 @@ class PagerAdapter(fragmentManager: FragmentManager, private val pageTitles: Arr
 
     override fun getPageTitle(position: Int): CharSequence? {
         return pageTitles[position]
-
     }
 
 }

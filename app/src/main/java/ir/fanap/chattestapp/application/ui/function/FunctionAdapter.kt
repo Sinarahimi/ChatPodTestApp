@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.bussines.model.Method
@@ -30,6 +31,7 @@ class FunctionAdapter(
         viewHolder.textViewFuncThree.text = methods[position].funcThree
         viewHolder.textViewFuncFour.text = methods[position].funcFour
         viewHolder.buttonRun.tag = position
+        viewHolder.buttonLog.tag = position
 
         if (methods[position].methodNameFlag == true) {
 
@@ -42,7 +44,6 @@ class FunctionAdapter(
             viewHolder.checkBox
                 .setImageResource(R.drawable.ic_done_black_24dp)
             viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
-
         }
 
 
@@ -165,12 +166,19 @@ class FunctionAdapter(
         val checkBoxSec: AppCompatImageView = itemView.findViewById(R.id.imageView_tickSec)
         val checkBoxThird: AppCompatImageView = itemView.findViewById(R.id.imageView_tickThird)
         val checkBoxFourth: AppCompatImageView = itemView.findViewById(R.id.imageView_tickFourth)
+        val buttonLog :  AppCompatImageView = itemView.findViewById(R.id.imgView_log)
         val buttonRun: AppCompatImageView = itemView.findViewById(R.id.buttonRun)
+
+        val progress_method = itemView.findViewById(R.id.progress_method) as ProgressBar
 
         init {
             buttonRun.setOnClickListener(View.OnClickListener {
                 viewHolderListener.onIconClicked(this)
             })
+
+            buttonLog.setOnClickListener {
+                viewHolderListener.onLogClicked(this)
+            }
         }
     }
 
@@ -182,6 +190,7 @@ class FunctionAdapter(
 
     interface ViewHolderListener {
         fun onIconClicked(clickedViewHolder: ViewHolder)
+        fun onLogClicked(clickedViewHolder: ViewHolder)
     }
 
     interface ICheckChangeListener {

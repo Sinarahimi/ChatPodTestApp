@@ -174,7 +174,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.uploadFile(requestUploadFile)
     }
 
-    fun uploadImage(activity: FragmentActivity?, uri: Uri?): String {
+    fun uploadImage(activity: FragmentActivity?, uri: Uri): String {
         return chat.uploadImage(activity, uri)
     }
 

@@ -5,10 +5,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import ir.fanap.chattestapp.R
 
-class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>(),Filterable {
+
+    var filteredLogs: MutableList<String> = logs
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.textViewLog.text = logs.get(position)
@@ -19,6 +23,38 @@ class LogAdapter(val logs: MutableList<String>) : RecyclerView.Adapter<LogAdapte
         }
     }
 
+
+    override fun getFilter(): Filter {
+
+        return object : Filter(){
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+                filteredLogs = results?.values as MutableList<String>
+                notifyDataSetChanged()
+            }
+
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                var charString:String = constraint.toString()
+                if (charString.isEmpty()) {
+                    filteredLogs = logs
+                }else{
+                var filteredLogsLst: MutableList<String> = mutableListOf()
+                    for (row in logs) {
+                        if (row.toLowerCase().contains(charString.toLowerCase())) {
+                            filteredLogsLst.add(row)
+                        }
+                    }
+
+                    filteredLogs = filteredLogsLst
+                }
+
+                var filterResults: FilterResults? = null
+                filterResults?.values = filteredLogs
+                return filterResults!!
+            }
+
+        }
+    }
     override fun getItemCount(): Int {
         return logs.size
     }

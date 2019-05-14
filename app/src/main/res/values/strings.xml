@@ -8,9 +8,15 @@
 
     <!--Tab's name-->
     <string name="tab_function">Function</string>
+    <string name="tab_upload">Upload</string>
     <string name="tab_chat">chat</string>
     <string name="tab_log">Log</string>
-
+    <string name="action_search">search</string>
+    <string name="search_hint">search log</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 
 
 </resources>

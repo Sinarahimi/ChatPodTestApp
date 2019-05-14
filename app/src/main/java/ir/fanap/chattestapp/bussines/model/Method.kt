@@ -16,6 +16,10 @@ class Method() {
     var funcThreeFlag : Boolean? = null
     var funcFourFlag : Boolean? = null
 
+    var log :String? = null
+
+    var response:Boolean? = null
+
     var methodNameImage: Int? = null
 
     var desc: String? = null
