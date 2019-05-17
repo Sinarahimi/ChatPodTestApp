@@ -40,10 +40,13 @@ class FunctionAdapter(
             }
 
             viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+            viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
         } else {
             viewHolder.checkBox
                 .setImageResource(R.drawable.ic_done_black_24dp)
             viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
+
+            viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.grey_log_color))
         }
 
 
@@ -91,7 +94,6 @@ class FunctionAdapter(
             viewHolder.checkBoxFourth
                 .setImageResource(R.drawable.ic_done_black_24dp)
         }
-
 
         if (!viewHolder.textViewFuncOne.text.isEmpty()) {
             viewHolder.checkBoxOne.visibility = View.VISIBLE

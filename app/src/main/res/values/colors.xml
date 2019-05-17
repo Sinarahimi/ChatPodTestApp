@@ -41,6 +41,8 @@
     <color name="grey_light">#E7E6E6</color>
     <color name="log_color">#424242</color>
 
+    <color name="grey_log_color">#bdbdbd</color>
+
 
 
 </resources>

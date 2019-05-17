@@ -1,7 +1,8 @@
 package ir.fanap.chattestapp.bussines.model
 
-public class CallBackMethod {
-    var uniqueId: String? = null
+ class CallBackMethod {
+//    var uniqueId: String? = null
+    var method: String? = null
     var position: Int? = null
 
 }
