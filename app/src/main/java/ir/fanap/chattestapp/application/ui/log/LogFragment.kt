@@ -16,6 +16,8 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
 
 

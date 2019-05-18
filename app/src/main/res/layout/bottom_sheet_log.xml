@@ -25,24 +25,6 @@
 
     </ScrollView>
 
-    <!--<ScrollView-->
-    <!--android:layout_width="match_parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--app:layout_constraintBottom_toTopOf="@+id/textView_state">-->
-    <!--<TextView-->
-    <!--android:id="@+id/textView_log"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:padding="16dp"-->
-    <!--android:textColor="@color/grey_light"-->
-    <!--tools:text="this is first log"-->
-    <!--app:layout_constraintBottom_toTopOf="@+id/textView_state"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--android:background="@color/log_color"-->
-    <!--/>-->
-
-    <!--</ScrollView>-->
     <android.support.v7.widget.AppCompatImageView
 
             android:id="@+id/appCompatImageView_noResponse"

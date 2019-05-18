@@ -36,15 +36,15 @@ class FunctionAdapter(
         if (methods[position].methodNameFlag == true) {
 
             context.runOnUiThread {
-                viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
+//                viewHolder.checkBox.setImageResource(R.drawable.ic_round_done_all_24px)
             }
 
-            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+//            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
             viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
         } else {
-            viewHolder.checkBox
-                .setImageResource(R.drawable.ic_done_black_24dp)
-            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
+//            viewHolder.checkBox
+//                .setImageResource(R.drawable.ic_done_black_24dp)
+//            viewHolder.checkBox.setColorFilter(ContextCompat.getColor(context, R.color.grey_light))
 
             viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.grey_log_color))
         }
