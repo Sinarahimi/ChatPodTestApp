@@ -151,12 +151,9 @@ class FunctionAdapter(
         this.pos = position
     }
 
-    final inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
+    inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
         RecyclerView.ViewHolder(itemView) {
-//        override fun onClick(v: View?) {
-//            val position = v?.getTag() as Int
-//            setPos(position)
-//        }
+
 
         val textViewFuncOne: TextView = itemView.findViewById(R.id.textView_FunOne)
         val textViewFuncTwo: TextView = itemView.findViewById(R.id.textView_FunTwo)

@@ -12,13 +12,11 @@ import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import android.support.design.circularreveal.CircularRevealCompat
 import android.support.design.circularreveal.cardview.CircularRevealCardView
 import android.support.v4.content.ContextCompat
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.fanap.podchat.ProgressHandler
@@ -34,7 +32,7 @@ import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
 import java.util.ArrayList
 
-class ChatFragment : Fragment(), TestListener {
+class UploadFragment : Fragment(), TestListener {
     private lateinit var atach_file: AppCompatImageView
     private lateinit var mainViewModel: MainViewModel
     private var fucCallback: HashMap<String, String> = hashMapOf()
@@ -50,15 +48,19 @@ class ChatFragment : Fragment(), TestListener {
     private lateinit var imageView_tickTwo: AppCompatImageView
     private lateinit var imageView_tickThree: AppCompatImageView
     private lateinit var imageView_tickFour: AppCompatImageView
-    private lateinit var prgressbarUploadImg: ProgressBar
     private lateinit var buttonUploadImage: AppCompatImageView
+
+    private lateinit var textView_progress_UploadImage: TextView
+    private lateinit var textView_progress_ReplyuploadFile: TextView
+    private lateinit var textView_progress_uploadFile: TextView
+    private lateinit var textView_progress_sendFileMsg: TextView
 
 
     private val faker: Faker = Faker()
 
     companion object {
-        fun newInstance(): ChatFragment {
-            return ChatFragment()
+        fun newInstance(): UploadFragment {
+            return UploadFragment()
         }
     }
 
@@ -71,43 +73,12 @@ class ChatFragment : Fragment(), TestListener {
         contextFrag = context!!
     }
 
-    /*private <T extends View & CircularRevealWidget> void circularRevealFromMiddle(@NonNull final T circularRevealWidget) {
-    circularRevealWidget.post(new Runnable() {
-        @Override
-        public void run() {
-            int viewWidth = circularRevealWidget.getWidth();
-            int viewHeight = circularRevealWidget.getHeight();
-
-            int viewDiagonal = (int) Math.sqrt(viewWidth * viewWidth + viewHeight * viewHeight);
-
-            final AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playTogether(
-                    CircularRevealCompat.createCircularReveal(circularRevealWidget, viewWidth / 2, viewHeight / 2, 10, viewDiagonal / 2),
-                    ObjectAnimator.ofArgb(circularRevealWidget, CircularRevealWidget.CircularRevealScrimColorProperty.CIRCULAR_REVEAL_SCRIM_COLOR, Color.RED, Color.TRANSPARENT));
-
-            animatorSet.setDuration(5000);
-            animatorSet.start();
-        }
-    });
-}*/
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
         val cicuralCard: CircularRevealCardView = view.findViewById(R.id.ccv_attachment_reveal)
         val appCompatImageView_gallery: AppCompatImageView = view.findViewById(R.id.appCompatImageView_gallery)
-        imageView_tickOne = view.findViewById(R.id.checkBox_Send_File_Msg)
-        imageView_tickTwo = view.findViewById(R.id.checkBox_Upload_File)
-        imageView_tickThree = view.findViewById(R.id.checkBox_Reply_File_Msg)
-        imageView_tickFour = view.findViewById(R.id.checkBox_ufil)
 
-        buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
-
-        txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
-        txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
-        txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
-        txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
-
-        prgressbarUploadImg = view.findViewById(R.id.progress_UploadImage)
+        initView(view)
 
         txtViewFileMsg.setOnClickListener { fileMsg() }
         txtViewUploadFile.setOnClickListener { uploadFile() }
@@ -143,7 +114,7 @@ class ChatFragment : Fragment(), TestListener {
                         startRadius.toFloat(),
                         endRadius.toFloat()
                     )
-                anim.interpolator = AccelerateDecelerateInterpolator()
+//                anim.interpolator = AccelerateDecelerateInterpolator()
 //                cicuralCard.visibility = View.VISIBLE
                 anim.duration = 50000
                 anim.start()
@@ -189,6 +160,25 @@ class ChatFragment : Fragment(), TestListener {
             }
         }
         return view
+    }
+
+    private fun initView(view: View) {
+        imageView_tickOne = view.findViewById(R.id.checkBox_Send_File_Msg)
+        imageView_tickTwo = view.findViewById(R.id.checkBox_Upload_File)
+        imageView_tickThree = view.findViewById(R.id.checkBox_Reply_File_Msg)
+        imageView_tickFour = view.findViewById(R.id.checkBox_uploadImage)
+
+        textView_progress_ReplyuploadFile = view.findViewById(R.id.textView_progress_ReplyuploadFile)
+        textView_progress_UploadImage = view.findViewById(R.id.textView_progress_UploadImage)
+        textView_progress_sendFileMsg = view.findViewById(R.id.textView_progress_sendFileMsg)
+        textView_progress_uploadFile = view.findViewById(R.id.textView_progress_uploadFile)
+
+        buttonUploadImage = view.findViewById(R.id.buttonUploadImage)
+
+        txtViewFileMsg = view.findViewById(R.id.TxtViewFileMsg)
+        txtViewUploadFile = view.findViewById(R.id.TxtViewUploadFile)
+        txtViewUploadImage = view.findViewById(R.id.TxtViewUploadImage)
+        txtViewReplyFileMsg = view.findViewById(R.id.TxtViewReplyFileMsg)
     }
 
     override fun onSent(response: ChatResponse<ResultMessage>?) {
@@ -344,17 +334,9 @@ class ChatFragment : Fragment(), TestListener {
     }
 
     fun uploadImageProgress() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            prgressbarUploadImg.setProgress(100, true)
-//        }
-
 
         if (!imageUrl.toString().isEmpty()) {
-//            prgressbarUploadImg.max = 100
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                prgressbarUploadImg.setProgress(10, true)
-//            }
-            prgressbarUploadImg.incrementProgressBy(10)
+
             mainViewModel.uploadImageProgress(contextFrag, activity, imageUrl, object : ProgressHandler.onProgress {
                 override fun onProgressUpdate(
                     uniqueId: String?,
@@ -363,19 +345,17 @@ class ChatFragment : Fragment(), TestListener {
                     totalBytesToSend: Int
                 ) {
                     super.onProgressUpdate(uniqueId, bytesSent, totalBytesSent, totalBytesToSend)
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        prgressbarUploadImg.setProgress(bytesSent, true)
-//                    }
-                    prgressbarUploadImg.incrementProgressBy(bytesSent)
+                    activity?.runOnUiThread {
+                        textView_progress_UploadImage.text = bytesSent.toString()
+                    }
                 }
 
                 override fun onFinish(imageJson: String?, chatResponse: ChatResponse<ResultImageFile>?) {
                     super.onFinish(imageJson, chatResponse)
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        prgressbarUploadImg.setProgress(50, true)
-//                    }
-                    prgressbarUploadImg.incrementProgressBy(100)
-
+                    activity?.runOnUiThread {
+                        textView_progress_UploadImage.text = "100 % "
+                        textView_progress_UploadImage.setTextColor(ContextCompat.getColor(activity!!,R.color.green_active))
+                    }
                 }
             })
         }

@@ -10,12 +10,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <Button android:layout_width="match_parent"
+        <android.support.design.button.MaterialButton
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="32dp"
                 android:layout_marginTop="8dp"
                 android:id="@+id/button_Connect"
                 android:text="connect"
+                style="@style/AppTheme.Button"
+                app:cornerRadius="@dimen/default_corner_radii"
                 tools:layout_editor_absoluteX="115dp" android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/guideline2"
                 app:layout_constraintTop_toTopOf="@+id/guideline3"/>
@@ -23,6 +26,7 @@
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                   android:textSize="14sp"
                   android:text="SandBox"
+                  android:visibility="gone"
                   android:id="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
                   android:layout_marginStart="16dp"
                   android:layout_marginTop="16dp"
@@ -33,6 +37,7 @@
                 android:id="@+id/switchCompat_sandBox"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@+id/button_Connect"
                 app:layout_constraintStart_toEndOf="@+id/textView2"
@@ -89,6 +94,7 @@
                                                       android:layout_marginStart="16dp" android:layout_marginTop="16dp"
                                                       app:layout_constraintTop_toTopOf="parent"
                                                       android:id="@+id/appCompatImageView"/>
+
     </android.support.constraint.ConstraintLayout>
 
     <include layout="@layout/bottom_sheet_log"/>

@@ -1,8 +1,7 @@
 package ir.fanap.chattestapp.bussines.model
 
-import android.widget.CheckBox
 
-class Method() {
+class Method {
 
     lateinit var methodName: String
     var funcOne: String? = null
@@ -18,11 +17,6 @@ class Method() {
 
     var log :String? = null
 
-    var response:Boolean? = null
-
-    var methodNameImage: Int? = null
-
-    var desc: String? = null
-    lateinit var checkBox: CheckBox
+    var funcStatusList : MutableList<FunctionStatus>? = null
 
 }

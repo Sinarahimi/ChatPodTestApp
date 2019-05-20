@@ -2,9 +2,8 @@ package ir.fanap.chattestapp.application.ui
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
-import ir.fanap.chattestapp.application.ui.chat.ChatFragment
+import ir.fanap.chattestapp.application.ui.chat.UploadFragment
 import ir.fanap.chattestapp.application.ui.function.FunctionFragment
 import ir.fanap.chattestapp.application.ui.log.LogFragment
 
@@ -22,7 +21,7 @@ class PagerAdapter(fragmentManager: FragmentManager, private val pageTitles: Arr
         when(position){
             0 -> return FunctionFragment.newInstance()
             1 -> return LogFragment.newInstance()
-            2 -> return ChatFragment.newInstance()
+            2 -> return UploadFragment.newInstance()
         }
         return null
     }
