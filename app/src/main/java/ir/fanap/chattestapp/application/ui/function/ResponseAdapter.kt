@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import ir.fanap.chattestapp.R
-import ir.fanap.chattestapp.bussines.model.Method
+import ir.fanap.chattestapp.bussines.model.FunctionStatus
 
 class ResponseAdapter(
-    private val methods: MutableList<Method>
+    private val subMethods: MutableList<FunctionStatus>
 ) :
     RecyclerView.Adapter<ResponseAdapter.ViewHolder>() {
 
@@ -26,18 +26,18 @@ class ResponseAdapter(
     }
 
     override fun getItemCount(): Int {
-        return methods.size
+        return subMethods.size
     }
 
     override fun onBindViewHolder(viewHolder: ResponseAdapter.ViewHolder, position: Int) {
 
-        if (methods[position].funcStatusList?.size!! >= 1) {
-
-            viewHolder.textView_function.text = methods[position].funcStatusList!![position].methodName
-            viewHolder.textView_item_function_state.text = methods[position].funcStatusList!![position].status
-            viewHolder.txtView_error_log.text = methods[position].funcStatusList!![position].errorLog
+        viewHolder.textView_function.text = subMethods[position].methodName
+        viewHolder.textView_item_function_state.text = subMethods[position].status
+        if (!subMethods[position].errorLog.isBlank()) {
+            viewHolder.txtView_error_log.text = subMethods[position].errorLog
+            viewHolder.txtView_error_log.visibility = View.VISIBLE
+        }else{
+            viewHolder.txtView_error_log.visibility = View.GONE
         }
     }
-
-
 }

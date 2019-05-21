@@ -41,6 +41,7 @@ class ConstantMsgType {
         const val CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID = "CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID"
         const val CREATE_THREAD_WITH_FORW_MSG_ID = "CREATE_THREAD_WITH_FORW_MSG_ID"
         const val GET_PARTICIPANT = "GET_PARTICIPANT"
+        const val BLOCK_LIST = "BLOCK_LIST"
         const val SUCCESSFUL = "SUCCESSFUL"
         const val ERROR = "ERROR"
         const val EMPTY_ERROR_LOG = ""
@@ -78,6 +79,7 @@ class ConstantMsgType {
         CREATE_THREAD_WITH_FORW_MSG_ID,
         GET_PARTICIPANT,
         ADD_PARTICIPANT_ID,
+        BLOCK_LIST,
         DELETE_MESSAGE
     )
 

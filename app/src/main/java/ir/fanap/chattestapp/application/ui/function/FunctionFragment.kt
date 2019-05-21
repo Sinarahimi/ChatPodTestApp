@@ -30,15 +30,21 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.bussines.model.Method
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_PARTICIPANT_ID
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_CONTACT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_LIST
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_FORW_MSG
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.EMPTY_ERROR_LOG
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ERROR
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_HISTORY
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_THREAD
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.REMOVE_CONTACT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.SEND_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.SUCCESSFUL
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.UNBLOCK_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.UPDATE_CONTACT
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncFour
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncOne
@@ -60,6 +66,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var mainViewModel: MainViewModel
     private lateinit var appCompatImageView_noResponse: AppCompatImageView
     private lateinit var txtView_noResponse: TextView
+    private lateinit var scrollView_log: ScrollView
 
     private lateinit var avLoadingIndicatorView: AVLoadingIndicatorView
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -117,7 +124,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onLogClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
         val position = clickedViewHolder.adapterPosition
 
+
         bottomSheetLog.state = BottomSheetBehavior.STATE_EXPANDED
+
+        val subMethods = methods[position].funcStatusList!!
+        val responseAdapter = ResponseAdapter(subMethods)
+        recyclerView_response.adapter = responseAdapter
 
         if (methods[position].log != null && !methods[position].log?.isEmpty()!!) {
             textView_log.text = methods[position].log
@@ -135,18 +147,31 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //
 //            }
         }
+
+        if (subMethods.size >= 1) {
+
+            appCompatImageView_noResponse.visibility = View.GONE
+            txtView_noResponse.visibility = View.GONE
+
+            recyclerView_response.visibility = View.VISIBLE
+        } else {
+            recyclerView_response.visibility = View.GONE
+            appCompatImageView_noResponse.visibility = View.VISIBLE
+            txtView_noResponse.visibility = View.VISIBLE
+        }
+
         if (textView_log.text.isEmpty()) {
             appCompatImageView_noResponse.visibility = View.VISIBLE
             txtView_noResponse.visibility = View.VISIBLE
+
+            scrollView_log.visibility = View.GONE
 
         } else {
             appCompatImageView_noResponse.visibility = View.GONE
             txtView_noResponse.visibility = View.GONE
 
-            recyclerView_response.visibility = View.VISIBLE
-            textView_log.visibility = View.VISIBLE
+            scrollView_log.visibility = View.VISIBLE
         }
-
     }
 
     override fun onIconClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
@@ -311,8 +336,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         recyclerView_response.setHasFixedSize(true)
         val linearLayoutMngResponse = LinearLayoutManager(context)
         recyclerView_response.layoutManager = linearLayoutMngResponse
-        val responseAdapter = ResponseAdapter(methods)
-        recyclerView_response.adapter = responseAdapter
+
 
     }
 
@@ -327,6 +351,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         textView_log = view.findViewById(R.id.textView_log)
         appCompatImageView_noResponse = view.findViewById(R.id.appCompatImageView_noResponse)
         txtView_noResponse = view.findViewById(R.id.TxtView_noResponse)
+        scrollView_log = view.findViewById(R.id.scrollView_log)
 
 
     }
@@ -382,8 +407,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onBlockList(response: ChatResponse<ResultBlockList>?) {
         super.onBlockList(response)
-        var position = 5
-//        val jsonString = gson.toJson(response)
+        val position = 5
+        updateMethodList(position, SUCCESSFUL, "", BLOCK_LIST)
         changeIconReceive(position, response!!)
     }
 
@@ -396,7 +421,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (funcCallback.containsKey(uniqueId)) {
             val position = funcCallback[uniqueId]?.position
-            methods.get(position!!).log = gson.toJson(chatResponse)
+            val methodName = funcCallback[uniqueId]?.method
+            val errorLog = gson.toJson(chatResponse)
+
+            if (methodName != null && position != null) {
+                updateMethodList(position, ERROR, errorLog, methodName)
+            }
 
             activity?.runOnUiThread {
                 val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position!!)
@@ -407,30 +437,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             }
         }
 
-//        methods[position].methodNameFlag = true
-//        activity?.runOnUiThread {
-//            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
-//            viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
-//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imgView_log)
-//                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
-//
-////        if (uniqueId == funcCallback[uniqueId]?.method) {
-////            funcCallback[uniqueId]
-////            activity?.runOnUiThread {
-////                val viewHolder: RecyclerView.ViewHolder = recyclerView.getChildViewHolder(recyclerView.getChildAt(3))
-////                viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-////                    .setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent))
-////            }
-//        }
     }
 
     override fun onUnBlock(response: ChatResponse<ResultBlock>?) {
         super.onUnBlock(response)
-        val position = 6
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.UNBLOCK_CONTACT) {
+            val position = 6
             funcCallback.remove(response?.uniqueId)
-
-            changeIconReceive(position)
+            updateMethodList(position, SUCCESSFUL, "", UNBLOCK_CONTACT)
+            changeIconReceive(position, response!!)
         }
     }
 
@@ -438,13 +453,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onGetThread(chatResponse)
         ConstantMsgType.GET_THREAD
         if (funcCallback[chatResponse?.uniqueId]?.method == ConstantMsgType.GET_THREAD) {
-            val position = 4
             funcCallback.remove(ConstantMsgType.GET_THREAD)
-            changeIconReceive(position)
-            methods[4].methodNameFlag = true
+            val position = 4
+            changeIconReceive(position, chatResponse!!)
+            updateMethodList(position, SUCCESSFUL, "", GET_THREAD)
         }
 
         if (funcCallback[chatResponse?.uniqueId]?.method == ConstantMsgType.SEND_MESSAGE) {
+            val position = 8
+            updateMethodList(position, SUCCESSFUL, "", GET_THREAD)
+
             if (chatResponse?.result?.threads?.size!! > 0) {
                 funcCallback.remove(ConstantMsgType.SEND_MESSAGE)
                 val threadId = chatResponse.result.threads[0].id
@@ -556,8 +574,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         //onSent
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.SEND_MESSAGE) {
             val position = 8
-            changeSecondIconReceive(position)
-            methods[position].funcOneFlag = true
+            changeIconReceive(position, response!!)
+            updateMethodList(position, SUCCESSFUL, "", SEND_MESSAGE)
         }
     }
 
@@ -597,9 +615,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onBlock(chatResponse)
         if (funcCallback[chatResponse?.uniqueId]?.method == ConstantMsgType.BLOCK_CONTACT) {
             val position = 2
-            changeIconReceive(position)
+            changeIconReceive(position, chatResponse!!)
             methods[position].methodNameFlag = true
+            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, BLOCK_CONTACT)
 
+
+            //Un block the contact that has been blocked
             val id = chatResponse?.result?.contact?.id
             if (id != null) {
                 val requestUnBlock = RequestUnBlock.Builder(id).build()
@@ -609,11 +630,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (funcCallback[chatResponse?.uniqueId]?.method == ConstantMsgType.UNBLOCK_CONTACT) {
             funcCallback.remove(ConstantMsgType.UNBLOCK_CONTACT)
             val contactId = chatResponse?.result?.contact?.id
+            updateMethodList(6, SUCCESSFUL, "", BLOCK_CONTACT)
+
             if (contactId != null) {
                 val requestUnBlock = RequestUnBlock.Builder(contactId).build()
-
                 val uniqueId = mainViewModel.unBlock(requestUnBlock)
-                funcCallback[uniqueId]?.method = ConstantMsgType.UNBLOCK_CONTACT
+
+                addToCallBack(UNBLOCK_CONTACT, uniqueId, 6)
             }
         }
     }
@@ -623,10 +646,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.ADD_CONTACT) {
             val position = 3
-            changeIconReceive(position)
-            methods[position].methodNameFlag = true
+            changeIconReceive(position, response!!)
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, ADD_CONTACT)
 
-            var id = response?.result?.contact?.id
+            val id = response.result?.contact?.id
             if (id != null) {
                 val requestRemoveContact = RequestRemoveContact.Builder(id).build()
                 mainViewModel.removeContact(requestRemoveContact)
@@ -634,14 +657,16 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_CONTACT) {
-            var id = response?.result?.contact?.id
+            val position = 9
+
+            updateMethodList(position, SUCCESSFUL, "", ADD_CONTACT)
+
+            val id = response?.result?.contact?.id
             if (id != null) {
                 funcCallback.remove(ConstantMsgType.REMOVE_CONTACT)
                 val requestRemoveContact = RequestRemoveContact.Builder(id).build()
                 val uniqueId = mainViewModel.removeContact(requestRemoveContact)
-                funcCallback[uniqueId]?.method = ConstantMsgType.REMOVE_CONTACT
-                val position = 9
-                changeIconSend(position, REMOVE_CONTACT, uniqueId)
+                addToCallBack(REMOVE_CONTACT,uniqueId,position)
             }
         }
     }
@@ -832,7 +857,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onRemoveContact(response)
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_CONTACT) {
             val position = 9
-            changeIconReceive(position)
+            changeIconReceive(position,response!!)
+            updateMethodList(position, SUCCESSFUL,"",REMOVE_CONTACT)
         }
     }
 
@@ -916,7 +942,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             handleGetThreadResponse(contactList)
         }
 
-
+        //onGetContact
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.GET_CONTACT) {
             val position = funcCallback[response?.uniqueId]?.position
             updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
@@ -1296,8 +1322,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .cellphoneNumber(faker.phoneNumber().cellPhone())
             .build()
         val uniqueId = mainViewModel.addContacts(requestAddContact)
-        funcCallback[uniqueId]?.method = ConstantMsgType.REMOVE_CONTACT
+        val position = 9
 
+        changeIconSend(position, REMOVE_CONTACT,uniqueId)
     }
 
     private fun handleSendMessageResponse(contactList: ArrayList<Contact>?) {
@@ -1335,7 +1362,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
                     val requestBlock = RequestBlock.Builder(contactId).build()
                     val uniqueId = mainViewModel.blockContact(requestBlock)
-
                     addToCallBack(ConstantMsgType.UNBLOCK_CONTACT, uniqueId, 6)
                     break
                 }
@@ -1466,7 +1492,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .build()
         val uniqueId = mainViewModel.addContacts(requestAddContact)
 
-        funcCallback[uniqueId]?.method = ConstantMsgType.ADD_CONTACT
         val position = 3
         changeIconSend(position, ConstantMsgType.ADD_CONTACT, uniqueId)
     }
@@ -1601,8 +1626,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun unBlockContact() {
         // get Contact
-        // block contact with 3 params
-        //
+
         val position = 6
         val requestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
@@ -1619,13 +1643,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun getBlockList() {
         val requestBlockList = RequestBlockList.Builder().build()
-        mainViewModel.getBlockList(requestBlockList)
+        val uniqueId = mainViewModel.getBlockList(requestBlockList)
+        val position = 5
+        changeIconSend(position, ConstantMsgType.BLOCK_LIST, uniqueId)
     }
 
     private fun getThread() {
         val requestThread = RequestThread.Builder().build()
         val uniqueId = mainViewModel.getThread(requestThread)
-        funcCallback[uniqueId]?.method = ConstantMsgType.GET_THREAD
         val position = 4
         changeIconSend(position, ConstantMsgType.GET_THREAD, uniqueId)
     }
@@ -1636,6 +1661,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     private fun changeIconReceive(position: Int) {
+
 
         activity?.runOnUiThread {
             val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
@@ -1671,8 +1697,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     /* visibility of progress bar*/
     private fun changeIconSend(position: Int, methodName: String, uniqueId: String) {
         val callBackMethod = CallBackMethod(methodName, position)
-//        callBackMethod.method = methodName
-//        callBackMethod.position = position
         funcCallback[uniqueId] = callBackMethod
 
         activity?.runOnUiThread {
@@ -1680,8 +1704,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
             viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
 
-//            viewHolder.itemView.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                .setImageResource(R.drawable.ic_round_done_all_24px)
         }
     }
 /*
