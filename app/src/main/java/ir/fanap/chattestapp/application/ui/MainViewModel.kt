@@ -38,7 +38,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onNewMessage(content: String?, response: ChatResponse<ResultNewMessage>?) {
                 super.onNewMessage(content, response)
                 testListener.onNewMessage(response)
-
             }
 
             override fun onError(content: String?, OutPutError: ErrorOutPut?) {
@@ -111,6 +110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onDeliver(response)
             }
 
+
             override fun onThreadRemoveParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
                 super.onThreadRemoveParticipant(content, response)
                 testListener.onThreadRemoveParticipant(response)
@@ -150,6 +150,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onGetHistory(content, response)
                 testListener.onGetHistory(response)
             }
+
+
 
         })
     }

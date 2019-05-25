@@ -31,6 +31,7 @@ import ir.fanap.chattestapp.bussines.model.Method
 import ir.fanap.chattestapp.application.ui.TestListener
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_CONTACT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_PARTICIPANT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_PARTICIPANT_ID
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_LIST
@@ -38,13 +39,20 @@ import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_FORW_MSG
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.EMPTY_ERROR_LOG
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ERROR
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.FORWARD_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_HISTORY
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.GET_THREAD
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.LEAVE_THREAD
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.MUTE_THREAD
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.REMOVE_CONTACT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.REMOVE_PARTICIPANT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.REMOVE_PARTICIPANT_ID
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.REPLY_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.SEND_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.SUCCESSFUL
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.UNBLOCK_CONTACT
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.UNMUTE_THREAD
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.UPDATE_CONTACT
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncFour
 import ir.fanap.chattestapp.application.ui.util.MethodList.Companion.methodFuncOne
@@ -395,14 +403,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     }
 
+    //TODO ITs not check yet
     private fun deleteMessage() {
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-
-        var callBackMethod: CallBackMethod? = null
-        callBackMethod?.method = ConstantMsgType.DELETE_MESSAGE
-        funcCallback[uniqueId] = callBackMethod!!
-
+        val position = 17
+        changeIconSend(position,ConstantMsgType.DELETE_MESSAGE,uniqueId)
     }
 
     override fun onBlockList(response: ChatResponse<ResultBlockList>?) {
@@ -535,40 +541,38 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REPLY_MESSAGE) {
             val position = 13
-            changeIconReceive(position)
-            methods[position].methodNameFlag = true
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, SEND_MESSAGE)
+
+            val messageId = response?.result?.messageId
+            val threadId = response?.result?.conversationId
+            val replyMessage =
+                RequestReplyMessage.Builder("this is replyMessage", threadId!!, messageId!!).build()
+
+            val uniqueId = mainViewModel.replyMessage(replyMessage)
+            addToCallBack(ConstantMsgType.REPLY_MESSAGE_ID, uniqueId, position)
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REPLY_MESSAGE_ID) {
-            val messageId = response?.result?.messageId
-            val threadId = funcCallback[ConstantMsgType.REPLY_MESSAGE_THREAD_ID]?.method
-            val replyMessage =
-                RequestReplyMessage.Builder("this is replyMessage", threadId?.toLong()!!, messageId!!).build()
-
-            val uniqueId = mainViewModel.replyMessage(replyMessage)
-            funcCallback[mainViewModel.replyMessage(replyMessage)]?.method = ConstantMsgType.REPLY_MESSAGE
             val position = 13
-            changeIconSend(position, ConstantMsgType.REPLY_MESSAGE, uniqueId)
+            if (response != null) {
+                changeIconReceive(position, response)
+            }
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, REPLY_MESSAGE)
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE) {
             val position = 12
-            changeSecondIconReceive(position)
-            methods[position].funcOneFlag = true
-        }
-
-        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE_ID) {
+            funcCallback.remove(response?.uniqueId)
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, SEND_MESSAGE)
 
             val messageIds = ArrayList<Long>()
             messageIds.add(response?.result?.messageId!!)
 
-            val threadId = funcCallback[ConstantMsgType.FORWARD_MESSAGE_THREAD_ID]?.method
-            val requestForwardMessage = RequestForwardMessage.Builder(threadId!!.toLong(), messageIds).build()
-
+            val threadId = response.result.conversationId
+            val requestForwardMessage = RequestForwardMessage.Builder(threadId, messageIds).build()
             val uniqueId = mainViewModel.forwardMessage(requestForwardMessage)[0]
-            funcCallback[uniqueId]?.method = ConstantMsgType.FORWARD_MESSAGE
-            val position = 12
-            changeIconSend(position, ConstantMsgType.FORWARD_MESSAGE, uniqueId)
+
+            addToCallBack(ConstantMsgType.FORWARD_MESSAGE_ID, uniqueId, position)
         }
 
         //onSent
@@ -593,11 +597,24 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         methods[position].funcThreeFlag = true
     }
 
+    override fun onNewMessage(response: ChatResponse<ResultNewMessage>?) {
+        super.onNewMessage(response)
+
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE_ID) {
+
+            val position = 12
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, FORWARD_MESSAGE)
+            changeIconReceive(position, response!!)
+        }
+    }
+
     override fun onLeaveThread(response: ChatResponse<ResultLeaveThread>?) {
         super.onLeaveThread(response)
         val position = 14
-        changeIconReceive(position)
-        methods[position].methodNameFlag = true
+        if (response != null) {
+            changeIconReceive(position,response)
+        }
+        updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, LEAVE_THREAD)
     }
 
     override fun onUpdateContact(response: ChatResponse<ResultUpdateContact>?) {
@@ -666,7 +683,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 funcCallback.remove(ConstantMsgType.REMOVE_CONTACT)
                 val requestRemoveContact = RequestRemoveContact.Builder(id).build()
                 val uniqueId = mainViewModel.removeContact(requestRemoveContact)
-                addToCallBack(REMOVE_CONTACT,uniqueId,position)
+                addToCallBack(REMOVE_CONTACT, uniqueId, position)
             }
         }
     }
@@ -678,8 +695,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.MUTE_THREAD) {
             val position = 15
-            changeIconReceive(position)
-            methods[position].methodNameFlag = true
+            changeIconReceive(position,response!!)
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG,ConstantMsgType.MUTE_THREAD)
         }
     }
 
@@ -688,8 +705,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.UNMUTE_THREAD) {
             val position = 16
-            changeIconReceive(position)
-            methods[position].methodNameFlag = true
+            changeIconReceive(position,response!!)
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG,ConstantMsgType.UNMUTE_THREAD)
         }
     }
 
@@ -727,6 +744,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG_ID
         }
 
+        //onCreateThread
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.GET_HISTORY) {
             funcCallback.remove(ConstantMsgType.GET_HISTORY)
             val threadId = response!!.result.thread.id
@@ -735,12 +753,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             funcCallback[uniqueId]?.method = ConstantMsgType.GET_HISTORY
         }
 
+        //onCreateThread
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.UNMUTE_THREAD) {
             funcCallback.remove(ConstantMsgType.UNMUTE_THREAD)
             val threadId = response!!.result.thread.id
             val requestMuteThread = RequestMuteThread.Builder(threadId).build()
             val uniqueId = mainViewModel.unMuteThread(requestMuteThread)
-            funcCallback[uniqueId]?.method = ConstantMsgType.UNMUTE_THREAD
+            val position = 16
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG,ConstantMsgType.UNMUTE_THREAD)
+            addToCallBack(ConstantMsgType.UNMUTE_THREAD,uniqueId,position)
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.MUTE_THREAD) {
@@ -748,7 +769,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val threadId = response!!.result.thread.id
             val requestMuteThread = RequestMuteThread.Builder(threadId).build()
             val uniqueId = mainViewModel.muteThread(requestMuteThread)
-            funcCallback[uniqueId]?.method = ConstantMsgType.MUTE_THREAD
+            val position = 15
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG,ConstantMsgType.CREATE_THREAD)
+            addToCallBack(ConstantMsgType.MUTE_THREAD,uniqueId,position)
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD) {
@@ -775,29 +798,44 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             methods[position].funcThreeFlag = true
         }
 
+        //Create Thread
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.LEAVE_THREAD) {
             val threadId = response?.result?.thread?.id
+            val position = 14
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, CREATE_THREAD)
+            funcCallback.remove(response?.uniqueId)
             val requeLeaveThread = RequestLeaveThread.Builder(threadId!!.toLong()).build()
             val uniqueId = mainViewModel.leaveThread(requeLeaveThread)
-            funcCallback[uniqueId]?.method = ConstantMsgType.LEAVE_THREAD
-            val position = 14
-            changeIconSend(position, ConstantMsgType.LEAVE_THREAD, uniqueId)
+            addToCallBack(ConstantMsgType.LEAVE_THREAD,uniqueId,position)
         }
 
+        //Create Thread
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE) {
             val threadId = response?.result?.thread?.id
+            val position = 12
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, CREATE_THREAD)
 
-            funcCallback[threadId.toString()]?.method = ConstantMsgType.FORWARD_MESSAGE_THREAD_ID
+            val requestMessage = RequestMessage.Builder("this is msg for forward", threadId!!).build()
+            val uniqueId = mainViewModel.sendTextMsg(requestMessage)
+            funcCallback.remove(response?.uniqueId)
+            addToCallBack(ConstantMsgType.FORWARD_MESSAGE, uniqueId, position)
         }
 
-        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REPLY_MESSAGE_THREAD_ID) {
-            funcCallback.remove(ConstantMsgType.REPLY_MESSAGE_THREAD_ID)
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REPLY_MESSAGE) {
+            funcCallback.remove(response?.uniqueId)
             val threadId = response?.result?.thread?.id
+            val position = 13
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, CREATE_THREAD)
 
-            funcCallback[threadId.toString()]?.method = ConstantMsgType.REPLY_MESSAGE_THREAD_ID
+            val requestMessage = RequestMessage.Builder("send msg for reply", threadId!!).build()
+            val uniqueId = mainViewModel.sendTextMsg(requestMessage)
+            addToCallBack(ConstantMsgType.REPLY_MESSAGE, uniqueId, position)
         }
 
+        //Create Thread
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.ADD_PARTICIPANT) {
+            val position = 10
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD)
             funcCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
             val participantId = funcCallback[ADD_PARTICIPANT_ID]?.method
             val partId = participantId?.toLong()
@@ -806,8 +844,28 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 val contactIdList: MutableList<Long> = mutableListOf()
                 contactIdList.add(partId)
                 val requestAddParticipants = RequestAddParticipants.Builder(threadId, contactIdList).build()
-                mainViewModel.addParticipant(requestAddParticipants)
+                val uniqueId = mainViewModel.addParticipant(requestAddParticipants)
+                addToCallBack(ADD_PARTICIPANT, uniqueId, position)
                 funcCallback.remove("ADD_PARTICIPANT_ID")
+            }
+        }
+
+        //Create Thread
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_PARTICIPANT) {
+            val position = 11
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, CREATE_THREAD)
+
+            funcCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
+            val participantId = funcCallback[REMOVE_PARTICIPANT_ID]?.method
+            val partId = participantId?.toLong()
+            val threadId = response?.result?.thread?.id
+
+            if (partId != null && threadId != null) {
+                val contactIdList: MutableList<Long> = mutableListOf()
+                contactIdList.add(partId)
+                val requestAddParticipants = RequestAddParticipants.Builder(threadId, contactIdList).build()
+                val uniqueId = mainViewModel.addParticipant(requestAddParticipants)
+                addToCallBack(REMOVE_PARTICIPANT, uniqueId, position)
             }
         }
     }
@@ -857,8 +915,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         super.onRemoveContact(response)
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_CONTACT) {
             val position = 9
-            changeIconReceive(position,response!!)
-            updateMethodList(position, SUCCESSFUL,"",REMOVE_CONTACT)
+            changeIconReceive(position, response!!)
+            updateMethodList(position, SUCCESSFUL, "", REMOVE_CONTACT)
         }
     }
 
@@ -902,15 +960,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.UNMUTE_THREAD) {
-            val position = funcCallback[response?.uniqueId]?.position
-            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            val position = 16
             funcCallback.remove(ConstantMsgType.UNMUTE_THREAD)
             handleUnmuteThread(contactList)
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.MUTE_THREAD) {
-            val position = funcCallback[response?.uniqueId]?.position
-            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            val position = 15
             funcCallback.remove(ConstantMsgType.MUTE_THREAD)
             handleMuteThread(contactList)
         }
@@ -923,8 +979,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REPLY_MESSAGE) {
-            val position = funcCallback[response?.uniqueId]?.position
-            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            val position = 13
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            funcCallback.remove(response?.uniqueId)
             handleReplyMessage(contactList)
         }
 
@@ -975,26 +1032,27 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             funcCallback.remove(ConstantMsgType.UNBLOCK_CONTACT)
             handleUnBlockContact(contactList)
         }
+
+        //onGetContact
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.ADD_PARTICIPANT) {
             val position = funcCallback[response?.uniqueId]?.position
             updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
             funcCallback.remove(ConstantMsgType.ADD_PARTICIPANT)
             handleAddParticipant(contactList)
         }
+        //onGetContact
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_PARTICIPANT) {
-            val position = funcCallback[response?.uniqueId]?.position
-            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            val position = 11
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
             funcCallback.remove(ConstantMsgType.REMOVE_PARTICIPANT)
             handleRemoveParticipant(contactList)
         }
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE) {
-            val position = funcCallback[response?.uniqueId]?.position
-            updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+            val position = 12
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
             funcCallback.remove(ConstantMsgType.FORWARD_MESSAGE)
             handleForward(contactList)
-            // CREATE WITH MSSAGE CONTACT
-            // STORE THE MESSAGE ID
-            //
+
         }
     }
 
@@ -1168,12 +1226,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                         val userId = contact.userId
                         val inviteList = Array<Invitee>(1, { i -> Invitee(contactId, 5) })
                         inviteList[0].id = contactId
-
+                        val position = 16
                         val uniqueId = mainViewModel.createThread(
                             ThreadType.Constants.NORMAL, inviteList, "", ""
                             , "", ""
                         )
-                        funcCallback[uniqueId]?.method = ConstantMsgType.UNMUTE_THREAD
+                        addToCallBack(UNMUTE_THREAD,uniqueId,position)
                         break
                     }
                 }
@@ -1189,7 +1247,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     choose++
                     if (choose == 2) {
                         val contactId = contact.id
-
+                        val position = 15
                         val inviteList = Array<Invitee>(1, { i -> Invitee(contactId, 2) })
                         inviteList[0].id = contactId
 
@@ -1197,8 +1255,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                             ThreadType.Constants.NORMAL, inviteList, "", ""
                             , "", ""
                         )
-
-                        funcCallback[uniqueId]?.method = ConstantMsgType.MUTE_THREAD
+                        updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
+                        addToCallBack(MUTE_THREAD,uniqueId,position)
                         break
                     }
                 }
@@ -1212,19 +1270,18 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(0, inviteList)
-                            .message(requestThreadInnerMessage)
-                            .build()
-                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
-                    if (uniqueId?.get(0) != null) {
-                        val firstUniq = uniqueId[0]
-                        funcCallback[firstUniq]?.method = ConstantMsgType.LEAVE_THREAD
-                    }
+                    val position = 14
+
+
+                    val inviteList = Array(1) { Invitee(contactId, 2) }
+                    inviteList[0].id = contactId
+                    val uniqueId = mainViewModel.createThread(
+                        ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
+                        , "", ""
+                    )
+
+                    addToCallBack(ConstantMsgType.LEAVE_THREAD,uniqueId,position)
+
                     break
                 }
             }
@@ -1237,18 +1294,23 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(0, inviteList)
-                            .message(requestThreadInnerMessage)
-                            .build()
-                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
-
-                    funcCallback[uniqueId!![0]]?.method = ConstantMsgType.REPLY_MESSAGE_THREAD_ID
-                    funcCallback[uniqueId[1]]?.method = ConstantMsgType.REPLY_MESSAGE_ID
+//                    val inviteList = ArrayList<Invitee>()
+//                    inviteList.add(Invitee(contactId, 1))
+//                    val requestThreadInnerMessage =
+//                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
+//                    val requestCreateThread: RequestCreateThread =
+//                        RequestCreateThread.Builder(0, inviteList)
+//                            .message(requestThreadInnerMessage)
+//                            .build()
+//                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    val inviteList = Array(1) { Invitee(contactId, 2) }
+                    inviteList[0].id = contactId
+                    val position = 13
+                    val uniqueId = mainViewModel.createThread(
+                        ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
+                        , "", ""
+                    )
+                    addToCallBack(ConstantMsgType.REPLY_MESSAGE, uniqueId, position)
                     break
                 }
             }
@@ -1257,9 +1319,39 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onThreadAddParticipant(response: ChatResponse<ResultAddParticipant>?) {
         super.onThreadAddParticipant(response)
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.ADD_PARTICIPANT) {
+            val position = 10
+            updateMethodList(position, SUCCESSFUL, "", ADD_PARTICIPANT)
+            changeIconReceive(position, response!!)
+        }
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_PARTICIPANT) {
+            val position = 11
+            updateMethodList(position, SUCCESSFUL, "", ADD_PARTICIPANT)
 
-        val position = 10
-        changeIconReceive(position)
+            val threadId = response?.result?.thread?.id
+            val participantId = funcCallback[REMOVE_PARTICIPANT_ID]?.method
+            val mutableList = mutableListOf<Long>()
+            mutableList.add(participantId!!.toLong())
+            val requestRemoveParticipants =
+                RequestRemoveParticipants.Builder(threadId!!, mutableList).build()
+
+            val uniqueId = mainViewModel.removeParticipant(requestRemoveParticipants)
+            funcCallback.remove(response.uniqueId)
+            addToCallBack(REMOVE_PARTICIPANT, uniqueId, position)
+        }
+    }
+
+    override fun onThreadRemoveParticipant(response: ChatResponse<ResultParticipant>?) {
+        super.onThreadRemoveParticipant(response)
+
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.REMOVE_PARTICIPANT) {
+            val position = 11
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, REMOVE_PARTICIPANT)
+            if (response != null) {
+                changeIconReceive(position, response)
+            }
+        }
+
     }
 
     private fun handleForward(contactList: ArrayList<Contact>?) {
@@ -1267,20 +1359,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
                     val contactId = contact.id
+                    val position = 12
 
-                    val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(0, inviteList)
-                            .message(requestThreadInnerMessage)
-                            .build()
-                    val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
+                    val inviteList = Array(1) { Invitee(contactId, 2) }
+                    inviteList[0].id = contactId
 
-                    funcCallback[uniqueId!![0]]?.method = ConstantMsgType.FORWARD_MESSAGE
+                    val uniqueId = mainViewModel.createThread(
+                        ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
+                        , "", ""
+                    )
+                    addToCallBack(ConstantMsgType.FORWARD_MESSAGE, uniqueId, position)
 
-                    funcCallback[uniqueId[1]]?.method = ConstantMsgType.FORWARD_MESSAGE_ID
                     break
                 }
             }
@@ -1294,18 +1383,19 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val inviteList = Array<Invitee>(1, { i -> Invitee(contactId, 2) })
+                    val inviteList = Array(1) { Invitee(contactId, 2) }
                     inviteList[0].id = contactId
 
                     val uniqueId = mainViewModel.createThread(
                         ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
                         , "", ""
                     )
+                    val position = 10
+                    addToCallBack(ADD_PARTICIPANT, uniqueId, position)
 
-                    funcCallback[uniqueId]?.method = ConstantMsgType.ADD_PARTICIPANT
                     choose++
                     if (choose == 2) {
-                        funcCallback[contactId.toString()]?.method = ADD_PARTICIPANT_ID
+                        addToCallBack(contactId.toString(), ADD_PARTICIPANT_ID, position)
                         break
                     }
                 }
@@ -1324,7 +1414,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         val uniqueId = mainViewModel.addContacts(requestAddContact)
         val position = 9
 
-        changeIconSend(position, REMOVE_CONTACT,uniqueId)
+        changeIconSend(position, REMOVE_CONTACT, uniqueId)
     }
 
     private fun handleSendMessageResponse(contactList: ArrayList<Contact>?) {
@@ -1441,20 +1531,15 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     private fun unMuteThread() {
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
-        ConstantMsgType.UNMUTE_THREAD
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        funcCallback[uniqueId]?.method = ConstantMsgType.UNMUTE_THREAD
         val position = 16
         changeIconSend(position, ConstantMsgType.UNMUTE_THREAD, uniqueId)
-//        val requestMuteThread = RequestMuteThread.Builder(threadId).build()
-//        mainViewModel.unMuteThread(requestMuteThread)
     }
 
     private fun muteThread() {
 
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        funcCallback[uniqueId]?.method = ConstantMsgType.MUTE_THREAD
         val position = 15
         changeIconSend(position, ConstantMsgType.MUTE_THREAD, uniqueId)
     }
@@ -1462,11 +1547,12 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun leaveThread() {
         val requestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        funcCallback[uniqueId]?.method = ConstantMsgType.LEAVE_THREAD
+
+        val position = 14
+        changeIconSend(position, ConstantMsgType.LEAVE_THREAD, uniqueId)
     }
 
     private fun removeParticipant() {
-
         val requestGetContact: RequestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
         funcCallback[uniqueId]?.method = ConstantMsgType.REMOVE_PARTICIPANT
@@ -1564,23 +1650,28 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_CHANNEL
     }
 
-
     private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
         if (contactList != null) {
+            var choose = 0
             for (contact: Contact in contactList) {
                 if (contact.isHasUser) {
+                    val position = 11
                     val contactId = contact.id
-                    val inviteList = ArrayList<Invitee>()
-                    inviteList.add(Invitee(contactId, 1))
-                    val requestThreadInnerMessage =
-                        RequestThreadInnerMessage.Builder().message(faker.music().genre()).build()
-                    val requestCreateThread: RequestCreateThread =
-                        RequestCreateThread.Builder(0, inviteList)
-                            .message(requestThreadInnerMessage)
-                            .build()
-//                    val uniqueId = mainViewModel.createThread(requestCreateThread)
-//                    funcCallback[ConstantMsgType.CREATE_THREAD] = uniqueId
-                    break
+
+                    val inviteList = Array(1) { Invitee(contactId, 2) }
+                    inviteList[0].id = contactId
+
+                    val uniqueId = mainViewModel.createThread(
+                        ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
+                        , "", ""
+                    )
+
+                    addToCallBack(REMOVE_PARTICIPANT, uniqueId, position)
+                    choose++
+                    if (choose == 2) {
+                        addToCallBack(contactId.toString(), ConstantMsgType.REMOVE_PARTICIPANT_ID, position)
+                        break
+                    }
                 }
             }
         }
@@ -1719,34 +1810,20 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         changeIconSend(position, ConstantMsgType.ADD_PARTICIPANT, uniqueId)
     }
 
+    //TODO its not working
     private fun forwardMessage() {
 
         val requestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        var callBackMethod: CallBackMethod? = null
-        callBackMethod?.method = ConstantMsgType.FORWARD_MESSAGE
-        funcCallback[uniqueId] = callBackMethod!!
-
-
-        //get contact
-        //createThread with message with that first contact
-        //createThread with second contact
-
-        //forward the message from first thread to second thread
-
-        // if the sent type come then its sent
-
+        val position = 12
+        changeIconSend(position, ConstantMsgType.FORWARD_MESSAGE, uniqueId)
     }
 
     private fun replyMessage() {
         val requestGetContact = RequestGetContact.Builder().build()
         val uniqueId = mainViewModel.getContact(requestGetContact)
-        var callBackMethod: CallBackMethod? = null
-        callBackMethod?.method = ConstantMsgType.REPLY_MESSAGE
-        funcCallback[uniqueId] = callBackMethod!!
-        //getContact
-        //CreateThread with message
-        //get that message id and thread id and call reply Message
+        val position = 13
+        changeIconSend(position, ConstantMsgType.REPLY_MESSAGE, uniqueId)
     }
 
 }

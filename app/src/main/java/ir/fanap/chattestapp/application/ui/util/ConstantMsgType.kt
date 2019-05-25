@@ -45,6 +45,7 @@ class ConstantMsgType {
         const val SUCCESSFUL = "SUCCESSFUL"
         const val ERROR = "ERROR"
         const val EMPTY_ERROR_LOG = ""
+        const val REMOVE_PARTICIPANT_ID = "REMOVE_PARTICIPANT_ID"
     }
 
     @StringDef(
@@ -80,6 +81,7 @@ class ConstantMsgType {
         GET_PARTICIPANT,
         ADD_PARTICIPANT_ID,
         BLOCK_LIST,
+        REMOVE_PARTICIPANT_ID,
         DELETE_MESSAGE
     )
 

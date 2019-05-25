@@ -77,7 +77,9 @@ dependencies {
     //        kapt "com.google.dagger:dagger-compiler:2.16"
     implementation 'com.wang.avi:library:2.1.3'
     implementation 'com.github.javafaker:javafaker:0.17.2'
+
     implementation 'com.fanap.podchat:podchat:0.4.2.0'
+
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     //    implementation 'com.android.support:recyclerview-v7:28.0.0'
