@@ -5,7 +5,7 @@ class MethodList {
     companion object {
         val methodNames: MutableList<String> =
             arrayListOf(
-                "0 Create Thread with message(NORMAL)",
+                "0 Create Thread with message",
                 "1 get Contact",
                 "2 Block Contact",
                 "3 Add Contact",
@@ -32,7 +32,7 @@ class MethodList {
 
         val methodFuncOne: MutableList<String> =
             arrayListOf(
-                "CHANNEL",//0
+                "",//0
                 "",//1
                 "",//2
                 "",//3
@@ -40,11 +40,11 @@ class MethodList {
                 "",//5
                 "",//6
                 "",//7
-                "8 sent",//8
+                "",//8
                 "",//9
                 "",//10
                 "",//11
-                "onSent",//12
+                "",//12
                 "",//13
                 "",//14
                 "",//15
@@ -52,13 +52,13 @@ class MethodList {
                 "",//17
                 "",//18
                 "",//19
-                "onSent",
+                "",
                 ""//21
             )
 
         val methodFuncTwo: MutableList<String> =
             arrayListOf(
-                "CHANNEL_GROUP",//0
+                "",//0
                 "",//1
                 "",//2
                 "",//3
@@ -66,7 +66,7 @@ class MethodList {
                 "",//5
                 "",//6
                 "",//7
-                "8 deliver",//8
+                "",//8
                 "",//9
                 "",//10
                 "",//11
@@ -84,7 +84,7 @@ class MethodList {
 
         val methodFuncThree: MutableList<String> =
             arrayListOf(
-                "PUBLIC_GROUP",//0
+                "",//0
                 "",//1
                 "",//2
                 "",//3
@@ -92,7 +92,7 @@ class MethodList {
                 "",//5
                 "",//6
                 "",//7
-                "8 seen",
+                "",
                 "",//9
                 "",//10
                 "",//11
@@ -110,7 +110,7 @@ class MethodList {
 
         val methodFuncFour: MutableList<String> =
             arrayListOf(
-                "OWNER_GROUP",//0
+                "",//0
                 "",//1
                 "",//2
                 "",//3

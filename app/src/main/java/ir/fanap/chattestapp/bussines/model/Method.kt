@@ -19,4 +19,6 @@ class Method {
 
     var funcStatusList : MutableList<FunctionStatus>? = null
 
+    var pending :Boolean = false
+
 }
