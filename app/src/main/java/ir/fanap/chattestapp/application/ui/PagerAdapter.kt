@@ -3,11 +3,14 @@ package ir.fanap.chattestapp.application.ui
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import ir.fanap.chattestapp.application.ui.chat.UploadFragment
+import ir.fanap.chattestapp.application.ui.upload.UploadFragment
 import ir.fanap.chattestapp.application.ui.function.FunctionFragment
 import ir.fanap.chattestapp.application.ui.log.LogFragment
 
-class PagerAdapter(fragmentManager: FragmentManager, private val pageTitles: Array<String>) :
+class PagerAdapter(
+    fragmentManager: FragmentManager,
+    private val pageTitles: Array<String>
+) :
     FragmentStatePagerAdapter(fragmentManager) {
 
     override fun getCount(): Int {
@@ -29,5 +32,4 @@ class PagerAdapter(fragmentManager: FragmentManager, private val pageTitles: Arr
     override fun getPageTitle(position: Int): CharSequence? {
         return pageTitles[position]
     }
-
 }

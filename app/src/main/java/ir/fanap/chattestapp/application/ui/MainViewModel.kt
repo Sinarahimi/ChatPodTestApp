@@ -4,6 +4,8 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.FragmentActivity
 import com.fanap.podchat.ProgressHandler
 import com.fanap.podchat.chat.Chat
@@ -12,15 +14,19 @@ import com.fanap.podchat.mainmodel.Invitee
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 import com.fanap.podchat.requestobject.*
+import ir.fanap.chattestapp.application.ui.log.LogListener
+import ir.fanap.chattestapp.application.ui.upload.UploadListener
 import rx.subjects.PublishSubject
 import java.util.*
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var chat: Chat = Chat.init(application)
     private lateinit var testListener: TestListener
+    private lateinit var uploadListener: UploadListener
+    private lateinit var logListener: LogListener
     var observable: PublishSubject<String> = PublishSubject.create()
-    var observableLog: PublishSubject<String> = PublishSubject.create()
 
     init {
         chat.isLoggable(true)
@@ -43,11 +49,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onError(content: String?, OutPutError: ErrorOutPut?) {
                 super.onError(content, OutPutError)
                 testListener.onError(OutPutError)
+                uploadListener.onError(OutPutError)
             }
 
             override fun onCreateThread(content: String?, response: ChatResponse<ResultThread>?) {
                 super.onCreateThread(content, response)
                 testListener.onCreateThread(response)
+                uploadListener.onCreateThread(response)
             }
 
             override fun onContactAdded(content: String?, response: ChatResponse<ResultAddContact>?) {
@@ -68,6 +76,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             override fun onGetContacts(content: String?, response: ChatResponse<ResultContact>?) {
                 super.onGetContacts(content, response)
                 testListener.onGetContact(response)
+                uploadListener.onGetContact(response)
             }
 
             override fun onGetBlockList(content: String?, response: ChatResponse<ResultBlockList>?) {
@@ -77,7 +86,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun OnLogEvent(log: String) {
                 super.OnLogEvent(log)
-                testListener.onLogEvent(log)
+                logListener.onLogEvent(log)
             }
 
             override fun onUpdateContact(content: String?, response: ChatResponse<ResultUpdateContact>?) {
@@ -92,12 +101,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onSent(content: String?, response: ChatResponse<ResultMessage>?) {
                 super.onSent(content, response)
+
                 testListener.onSent(response)
+
+                uploadListener.onSent(response)
             }
 
             override fun onGetThread(content: String?, thread: ChatResponse<ResultThreads>?) {
                 super.onGetThread(content, thread)
                 testListener.onGetThread(thread)
+                uploadListener.onGetThreadU()
             }
 
             override fun onSeen(content: String?, response: ChatResponse<ResultMessage>?) {
@@ -105,11 +118,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 testListener.onSeen(response)
             }
 
+            override fun onUploadFile(content: String?, response: ChatResponse<ResultFile>?) {
+                super.onUploadFile(content, response)
+                testListener.onUploadFile(response)
+                uploadListener.onUploadFile(response)
+            }
+
+            override fun onUploadImageFile(content: String?, response: ChatResponse<ResultImageFile>?) {
+                super.onUploadImageFile(content, response)
+                testListener.onUploadImageFile(response)
+                uploadListener.onUploadImageFile(response)
+
+            }
+
             override fun onDeliver(content: String?, response: ChatResponse<ResultMessage>?) {
                 super.onDeliver(content, response)
                 testListener.onDeliver(response)
             }
-
 
             override fun onThreadRemoveParticipant(content: String?, response: ChatResponse<ResultParticipant>?) {
                 super.onThreadRemoveParticipant(content, response)
@@ -150,14 +175,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 super.onGetHistory(content, response)
                 testListener.onGetHistory(response)
             }
-
-
-
         })
+    }
+
+    fun setLogListener(logListener: LogListener) {
+        this.logListener = logListener
     }
 
     fun setTestListener(testListener: TestListener) {
         this.testListener = testListener
+    }
+
+    fun setUploadListener(uploadListener: UploadListener) {
+        this.uploadListener = uploadListener
     }
 
     fun connect(
@@ -165,11 +195,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         ssoHost: String, platformHost: String, fileServer: String, typeCode: String?
     ) {
         chat.connect(socketAddress, appId, severName, token, ssoHost, platformHost, fileServer, typeCode)
-        chat.addListener(object : ChatListener {
-            override fun onUserInfo(content: String?, response: ChatResponse<ResultUserInfo>?) {
-                super.onUserInfo(content, response)
-            }
-        })
     }
 
     fun uploadFile(requestUploadFile: RequestUploadFile): String {
@@ -193,7 +218,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.sendFileMessage(requestFileMessage, objects)
     }
 
-    fun replyWithFile(requestReplyMessage: RequestReplyFileMessage, objects: ProgressHandler.sendFileMessage): String {
+    fun replyFileMessage(
+        requestReplyMessage: RequestReplyFileMessage,
+        objects: ProgressHandler.sendFileMessage
+    ): String {
         return chat.replyFileMessage(requestReplyMessage, objects)
     }
 
@@ -262,7 +290,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.removeContact(requestRemoveContact)
     }
 
-
     fun blockContact(requestBlock: RequestBlock): String {
         return chat.block(requestBlock, null)
     }
@@ -311,3 +338,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return chat.getThreadParticipants(requestThreadParticipant, null)
     }
 }
+

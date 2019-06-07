@@ -29,7 +29,6 @@
 
     </android.support.v7.widget.RecyclerView>
 
-
     <ScrollView
             android:id="@+id/scrollView_log"
             android:visibility="gone"
@@ -37,19 +36,17 @@
             android:layout_height="0dp"
             android:layout_width="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/button_show_detail"
             android:background="@color/log_color"
             tools:layout_editor_absoluteX="8dp">
 
-            <TextView
-                    android:id="@+id/textView_log"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="16dp"
-                    android:textColor="@color/grey_light"
-                    tools:text="this is first log"/>
-
-
+        <TextView
+                android:id="@+id/textView_log"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:textColor="@color/grey_light"
+                tools:text="this is first log"/>
     </ScrollView>
 
     <android.support.v7.widget.AppCompatImageView
@@ -92,6 +89,13 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
     />
+    <Button
+            android:id="@+id/button_show_detail"
+            android:text="@string/button_show_details"
+            android:textStyle="bold"
+            style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+            app:layout_constraintTop_toBottomOf="@+id/guideline"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
     <android.support.constraint.Guideline android:layout_width="wrap_content"
                                           android:layout_height="wrap_content"
                                           android:id="@+id/guideline"

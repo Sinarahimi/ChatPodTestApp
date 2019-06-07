@@ -46,8 +46,11 @@
             tools:visibility="visible"
             android:layout_width="35dp" android:layout_height="35dp"
             style="@style/Widget.AppCompat.ProgressBar"
-            app:layout_constraintEnd_toEndOf="@+id/buttonRun" app:layout_constraintStart_toStartOf="@+id/buttonRun"
-            app:layout_constraintBottom_toBottomOf="@+id/buttonRun" app:layout_constraintTop_toTopOf="@+id/buttonRun"/>
+            app:layout_constraintEnd_toEndOf="@+id/buttonRun"
+            app:layout_constraintStart_toStartOf="@+id/buttonRun"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonRun"
+            app:layout_constraintTop_toTopOf="@+id/buttonRun"/>
+
     <TextView
             android:id="@+id/textView_method"
             android:layout_width="wrap_content"

@@ -5,7 +5,7 @@ class MethodList {
     companion object {
         val methodNames: MutableList<String> =
             arrayListOf(
-                "0 Create Thread with message",
+                "0 Create Thread ",
                 "1 get Contact",
                 "2 Block Contact",
                 "3 Add Contact",

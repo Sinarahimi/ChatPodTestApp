@@ -1,6 +1,6 @@
 package ir.fanap.chattestapp.application.ui.function
 
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -36,9 +36,14 @@ import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.ADD_PA
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_CONTACT
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.BLOCK_LIST
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_CHANNEL
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_CHANNEL_GROUP
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_NORMAL
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_PUBLIC_GROUP
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_FORW_MSG
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_FORW_MSG_CONTCT_ID
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_FORW_MSG_ID
+import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.CREATE_THREAD_WITH_MSG
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.DELETE_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.EDIT_MESSAGE
 import ir.fanap.chattestapp.application.ui.util.ConstantMsgType.Companion.EMPTY_ERROR_LOG
@@ -73,14 +78,15 @@ import java.util.*
 class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestListener {
 
     private lateinit var buttonConect: Button
+    private lateinit var button_show_detail: Button
     private lateinit var switchCompat_sandBox: SwitchCompat
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewFunction: RecyclerView
     private lateinit var recyclerView_response: RecyclerView
     private lateinit var mainViewModel: MainViewModel
     private lateinit var appCompatImageView_noResponse: AppCompatImageView
     private lateinit var txtView_noResponse: TextView
     private lateinit var scrollView_log: ScrollView
-
+    private var chatStates: Boolean? = false
     private lateinit var avLoadingIndicatorView: AVLoadingIndicatorView
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var recyclerViewSmooth: RecyclerView.SmoothScroller
@@ -99,14 +105,34 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private lateinit var subMethods: MutableList<FunctionStatus>
 
     companion object {
-
         fun newInstance(): FunctionFragment {
             return FunctionFragment()
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        mainViewModel = activity.run { ViewModelProviders.of(this!!).get(MainViewModel::class.java) }
+        mainViewModel.setTestListener(this)
+
+        mainViewModel.observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                textView_state.text = it
+                if (it == "CHAT_READY") {
+                    chatStates = true
+                    avLoadingIndicatorView.visibility = View.GONE
+                    textView_state.setTextColor(
+                        ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
+                    )
+                }
+            }
+    }
+
     private fun connect() {
         avLoadingIndicatorView.visibility = View.VISIBLE
+
         if (sandbox) {
 
             //sandBox
@@ -137,8 +163,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onLogClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
         val position = clickedViewHolder.adapterPosition
-
-
         bottomSheetLog.state = BottomSheetBehavior.STATE_EXPANDED
 
         subMethods = methods[position].funcStatusList!!
@@ -149,7 +173,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             textView_log.text = methods[position].log
 //            when (position) {
 //                0 -> {
-//
 //                }
 //                1 -> {
 //                    textView_log.text = methods[position].log
@@ -157,8 +180,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 //                2 -> {
 //                    textView_log.text = methods[position].log
 //                }
-//
-//
 //            }
         }
 
@@ -189,7 +210,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     }
 
     override fun onIconClicked(clickedViewHolder: FunctionAdapter.ViewHolder) {
-        var position = clickedViewHolder.adapterPosition
+        val position = clickedViewHolder.adapterPosition
         when (position) {
             0 -> {
                 createThread()
@@ -267,27 +288,32 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.fragment_function, container, false)
         initView(view)
-
         val buttonClose = view.findViewById(R.id.button_close) as Button
 
         bottomSheetSetup(buttonClose)
 
-        setupMethodRecyclerSetup()
-        setupFunctionRecyclerView()
-
+        setupMethodRecyclerView()
+        setupSubMethodRecyclerView()
 
         buttonConect.setOnClickListener { connect() }
         switchCompat_sandBox.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             sandbox = true
         })
 
+        button_show_detail.setOnClickListener {
+            activity?.runOnUiThread {
+                recyclerView_response.visibility = View.GONE
+                button_show_detail.visibility = View.GONE
+                scrollView_log.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+        }
         return view
     }
 
-    private fun setupMethodRecyclerSetup() {
-        recyclerView.setHasFixedSize(true)
+    private fun setupMethodRecyclerView() {
+        recyclerViewFunction.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(context)
-        recyclerView.layoutManager = linearLayoutManager
+        recyclerViewFunction.layoutManager = linearLayoutManager
         recyclerViewSmooth = object : LinearSmoothScroller(activity) {
             override fun getVerticalSnapPreference(): Int {
                 return SNAP_TO_START
@@ -311,7 +337,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
 
         functionAdapter = FunctionAdapter(this.activity!!, methods, this)
-        recyclerView.adapter = functionAdapter
+        recyclerViewFunction.adapter = functionAdapter
     }
 
     private fun bottomSheetSetup(button_close: Button) {
@@ -334,30 +360,32 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     }
                 }
             }
-
         })
 
         button_close.setOnClickListener {
             if (bottomSheetLog.state != BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetLog.state = BottomSheetBehavior.STATE_COLLAPSED
                 textView_log.text = ""
-                subMethods.clear()
+                activity.runCatching {
+                    scrollView_log.layoutParams.height = 0
+                    recyclerView_response.visibility = View.VISIBLE
+                    button_show_detail.visibility = View.VISIBLE
+                }
             }
         }
     }
 
-    private fun setupFunctionRecyclerView() {
+    private fun setupSubMethodRecyclerView() {
 
         recyclerView_response.setHasFixedSize(true)
         val linearLayoutMngResponse = LinearLayoutManager(context)
         recyclerView_response.layoutManager = linearLayoutMngResponse
-
-
     }
 
     private fun initView(view: View) {
         buttonConect = view.findViewById(R.id.button_Connect)
-        recyclerView = view.findViewById(R.id.recyclerV_funcFrag)
+        button_show_detail = view.findViewById(R.id.button_show_detail)
+        recyclerViewFunction = view.findViewById(R.id.recyclerV_funcFrag)
         recyclerView_response = view.findViewById(R.id.recyclerView_response)
         textView_state = view.findViewById(R.id.textView_state)
         switchCompat_sandBox = view.findViewById(R.id.switchCompat_sandBox)
@@ -367,28 +395,26 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         appCompatImageView_noResponse = view.findViewById(R.id.appCompatImageView_noResponse)
         txtView_noResponse = view.findViewById(R.id.TxtView_noResponse)
         scrollView_log = view.findViewById(R.id.scrollView_log)
-
-
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
-            .create(MainViewModel::class.java)
-//            .of(this).get(MainViewModel::class.java)
-        mainViewModel.setTestListener(this)
-        mainViewModel.observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
-            textView_state.text = it
+    override fun onChatState(state: String?) {
+        super.onChatState(state)
+        activity?.runOnUiThread {
+            textView_state.text = state
 
-            if (it.equals("CHAT_READY")) {
+            if (state.equals("CHAT_READY")) {
+                chatStates = true
                 avLoadingIndicatorView.visibility = View.GONE
                 textView_state.setTextColor(
                     ContextCompat.getColor(activity?.applicationContext!!, R.color.green_active)
                 )
             }
         }
+    }
+
+    private fun createThreadWithMessage() {
+
     }
 
     private fun getHistory() {
@@ -431,13 +457,14 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             val position = funcCallback[uniqueId]?.position
             val methodName = funcCallback[uniqueId]?.method
             val errorLog = gson.toJson(chatResponse)
-
+            methods[position!!].error = true
             if (methodName != null && position != null) {
                 updateMethodList(position, ERROR, errorLog, methodName)
             }
 
             activity?.runOnUiThread {
-                val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position!!)
+                val viewHolder: RecyclerView.ViewHolder? =
+                    recyclerViewFunction.findViewHolderForAdapterPosition(position!!)
                 viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
 
                 viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imgView_log)
@@ -458,7 +485,6 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     override fun onGetThread(chatResponse: ChatResponse<ResultThreads>?) {
         super.onGetThread(chatResponse)
-        ConstantMsgType.GET_THREAD
         if (funcCallback[chatResponse?.uniqueId]?.method == ConstantMsgType.GET_THREAD) {
             funcCallback.remove(ConstantMsgType.GET_THREAD)
             val position = 4
@@ -589,6 +615,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             addToCallBack(ConstantMsgType.FORWARD_MESSAGE_ID, uniqueId, position)
         }
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.FORWARD_MESSAGE_ID) {
+            val position = 12
+            updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, FORWARD_MESSAGE)
+            changeIconReceive(position, response!!)
+        }
 
         //onSent
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.SEND_MESSAGE) {
@@ -655,7 +686,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             //Un block the contact that has been blocked
             val id = chatResponse?.result?.contact?.id
             if (id != null) {
-                val requestUnBlock = RequestUnBlock.Builder(id).build()
+                val requestUnBlock = RequestUnBlock.Builder().contactId(id).build()
                 mainViewModel.unBlock(requestUnBlock)
             }
         }
@@ -665,7 +696,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             updateMethodList(6, SUCCESSFUL, "", BLOCK_CONTACT)
 
             if (contactId != null) {
-                val requestUnBlock = RequestUnBlock.Builder(contactId).build()
+                val requestUnBlock = RequestUnBlock.Builder().contactId(contactId).build()
                 val uniqueId = mainViewModel.unBlock(requestUnBlock)
 
                 addToCallBack(UNBLOCK_CONTACT, uniqueId, 6)
@@ -754,6 +785,38 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             addToCallBack(ConstantMsgType.GET_PARTICIPANT, uniqueId, position)
         }
 
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_PUBLIC_GROUP) {
+            funcCallback.remove(ConstantMsgType.CREATE_THREAD_PUBLIC_GROUP)
+            val position = 0
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD_PUBLIC_GROUP)
+        }
+
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_WITH_MSG) {
+            funcCallback.remove(ConstantMsgType.CREATE_THREAD_WITH_MSG)
+            val position = 0
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD_WITH_MSG)
+        }
+
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_NORMAL) {
+            funcCallback.remove(ConstantMsgType.CREATE_THREAD_NORMAL)
+            val position = 0
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD_NORMAL)
+            changeIconReceive(position, response!!)
+        }
+
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_CHANNEL) {
+            funcCallback.remove(ConstantMsgType.CREATE_THREAD_CHANNEL)
+            val position = 0
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD_CHANNEL)
+        }
+        if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_CHANNEL_GROUP) {
+            funcCallback.remove(ConstantMsgType.CREATE_THREAD_CHANNEL_GROUP)
+            val position = 0
+            updateMethodList(position, SUCCESSFUL, "", CREATE_THREAD_CHANNEL_GROUP)
+        }
+
+
+
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD_WITH_FORW_MSG) {
             val threadId = response!!.result.thread.id
             val requestMessage =
@@ -786,7 +849,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.UNMUTE_THREAD) {
             funcCallback.remove(ConstantMsgType.UNMUTE_THREAD)
             val threadId = response!!.result.thread.id
-            val requestMuteThread = RequestMuteThread.Builder(threadId).build()
+            val requestMuteThread = RequestMuteThread.Builder().threadId(threadId).build()
             val uniqueId = mainViewModel.unMuteThread(requestMuteThread)
             val position = 16
             updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, ConstantMsgType.UNMUTE_THREAD)
@@ -796,7 +859,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.MUTE_THREAD) {
             funcCallback.remove(ConstantMsgType.MUTE_THREAD)
             val threadId = response!!.result.thread.id
-            val requestMuteThread = RequestMuteThread.Builder(threadId).build()
+            val requestMuteThread = RequestMuteThread.Builder().threadId(threadId).build()
             val uniqueId = mainViewModel.muteThread(requestMuteThread)
             val position = 15
             updateMethodList(position, SUCCESSFUL, EMPTY_ERROR_LOG, ConstantMsgType.CREATE_THREAD)
@@ -846,7 +909,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
             val requestMessage = RequestMessage.Builder("this is msg for forward", threadId!!).build()
             val uniqueId = mainViewModel.sendTextMsg(requestMessage)
-            funcCallback.remove(response?.uniqueId)
+            funcCallback.remove(response.uniqueId)
             addToCallBack(ConstantMsgType.FORWARD_MESSAGE, uniqueId, position)
         }
 
@@ -919,15 +982,13 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 addToCallBack(REMOVE_PARTICIPANT, uniqueId, position)
             }
         }
-
-
     }
-
 
     private fun changeFourthIconReceive(position: Int) {
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
+                val viewHolder: RecyclerView.ViewHolder =
+                    recyclerViewFunction.findViewHolderForAdapterPosition(position)!!
                 viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFourth)
                     .setImageResource(R.drawable.ic_round_done_all_24px)
 
@@ -940,7 +1001,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
     private fun changeThirdIconReceive(position: Int) {
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
+                val viewHolder: RecyclerView.ViewHolder =
+                    recyclerViewFunction.findViewHolderForAdapterPosition(position)!!
                 viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickThird)
                     .setImageResource(R.drawable.ic_round_done_all_24px)
 
@@ -950,11 +1012,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         }
     }
 
-
     private fun changeSecondIconReceive(position: Int) {
         activity?.runOnUiThread {
             if (view != null) {
-                val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
+                val viewHolder: RecyclerView.ViewHolder =
+                    recyclerViewFunction.findViewHolderForAdapterPosition(position)!!
                 viewHolder.itemView.findViewById<AppCompatImageView>(R.id.imageView_tickFirst)
                     .setImageResource(R.drawable.ic_round_done_all_24px)
 
@@ -1048,6 +1110,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             handleSendMessageResponse(contactList)
         }
 
+        //onGetContact
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.CREATE_THREAD) {
             val position = funcCallback[response?.uniqueId]?.position
             updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
@@ -1059,10 +1122,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         if (funcCallback[response?.uniqueId]?.method == ConstantMsgType.GET_CONTACT) {
             val position = funcCallback[response?.uniqueId]?.position
             updateMethodList(position!!, SUCCESSFUL, EMPTY_ERROR_LOG, GET_CONTACT)
-            methods[position].methodNameFlag = true
-            var json = gson.toJson(response?.result)
-            methods[position].log = json
-            changeIconReceive(position)
+            changeIconReceive(position, response!!)
         }
 
         //onGetContact
@@ -1413,11 +1473,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                     inviteList[0].id = contactId
 
                     val uniqueId = mainViewModel.createThread(
-                        ThreadType.Constants.PUBLIC_GROUP, inviteList, "nothing", ""
+                        ThreadType.Constants.NORMAL, inviteList, "nothing", ""
                         , "", ""
                     )
                     addToCallBack(ConstantMsgType.FORWARD_MESSAGE, uniqueId, position)
-
                     break
                 }
             }
@@ -1498,7 +1557,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val requestBlock = RequestBlock.Builder(contactId).build()
+                    val requestBlock = RequestBlock.Builder().contactId(contactId).build()
                     val uniqueId = mainViewModel.blockContact(requestBlock)
                     addToCallBack(ConstantMsgType.UNBLOCK_CONTACT, uniqueId, 6)
                     break
@@ -1541,7 +1600,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 if (contact.isHasUser) {
                     val contactId = contact.id
 
-                    val requestBlock = RequestBlock.Builder(contactId).build()
+                    val requestBlock = RequestBlock.Builder().contactId(contactId).build()
                     val uniqueId = mainViewModel.blockContact(requestBlock)
 
 //                    funcCallback[uniqueId]?.method = ConstantMsgType.BLOCK_CONTACT
@@ -1624,7 +1683,10 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             .firstName(faker.name()?.firstName())
             .lastName(faker.name()?.lastName())
             .build()
-        val uniqueId = mainViewModel.addContacts(requestAddContact)
+        lateinit var uniqueId: String
+        activity?.runOnUiThread {
+            uniqueId = mainViewModel.addContacts(requestAddContact)
+        }
 
         val position = 3
         changeIconSend(position, ConstantMsgType.ADD_CONTACT, uniqueId)
@@ -1666,7 +1728,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             ThreadType.Constants.OWNER_GROUP, list, "nothing", ""
             , "", ""
         )
-        funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_OWNER_GROUP
+        val position = 0
+        addToCallBack(ConstantMsgType.CREATE_THREAD_OWNER_GROUP, uniqueId, position)
     }
 
     private fun createThreadPublicGroup(inviteList: ArrayList<Invitee>) {
@@ -1676,7 +1739,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             ThreadType.Constants.PUBLIC_GROUP, list, "nothing", ""
             , "", ""
         )
-        funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_PUBLIC_GROUP
+        val position = 0
+        addToCallBack(ConstantMsgType.CREATE_THREAD_PUBLIC_GROUP, uniqueId, position)
     }
 
     private fun createThreadChannelGroup(inviteList: ArrayList<Invitee>) {
@@ -1686,8 +1750,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             ThreadType.Constants.CHANNEL_GROUP, list, "nothing", ""
             , "", ""
         )
-        funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_CHANNEL_GROUP
-
+        val position = 0
+        addToCallBack(ConstantMsgType.CREATE_THREAD_CHANNEL_GROUP, uniqueId, position)
     }
 
     private fun createThreadChannel(inviteList: ArrayList<Invitee>) {
@@ -1697,7 +1761,8 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
             ThreadType.Constants.CHANNEL, list, "nothing", ""
             , "", ""
         )
-        funcCallback[uniqueId]?.method = ConstantMsgType.CREATE_THREAD_CHANNEL
+        val position = 0
+        addToCallBack(ConstantMsgType.CREATE_THREAD_CHANNEL, uniqueId, position)
     }
 
     private fun handleRemoveParticipant(contactList: ArrayList<Contact>?) {
@@ -1753,8 +1818,9 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                             .message(requestThreadInnerMessage)
                             .build()
                     val uniqueId = mainViewModel.createThreadWithMessage(requestCreateThread)
-                    funcCallback[uniqueId!![0]]?.method = ConstantMsgType.CREATE_THREAD
+                    funcCallback[uniqueId!![0]]?.method = ConstantMsgType.CREATE_THREAD_WITH_MSG
 
+                    createThread(inviteList)
                     createThreadChannel(inviteList)
                     createThreadChannelGroup(inviteList)
                     createThreadOwnerGroup(inviteList)
@@ -1763,6 +1829,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
                 }
             }
         }
+    }
+
+    private fun createThread(inviteList: ArrayList<Invitee>) {
+        val list = Array<Invitee>(1, { i -> Invitee(inviteList[0].id, 2) })
+
+        val uniqueId = mainViewModel.createThread(
+            ThreadType.Constants.NORMAL, list, "nothing", ""
+            , "", ""
+        )
+        val position = 0
+        addToCallBack(ConstantMsgType.CREATE_THREAD_NORMAL, uniqueId, position)
     }
 
     private fun unBlockContact() {
@@ -1805,15 +1882,11 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
 
         activity?.runOnUiThread {
-            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
+            val viewHolder: RecyclerView.ViewHolder? = recyclerViewFunction.findViewHolderForAdapterPosition(position)
             viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
             viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imgView_log)
                 ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
 
-//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                ?.setImageResource(R.drawable.ic_round_done_all_24px)
-//            viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.checkBox_ufil)
-//                ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
         }
     }
 
@@ -1824,7 +1897,7 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
         methods[position].log = jsonString
 
         activity?.runOnUiThread {
-            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForAdapterPosition(position)
+            val viewHolder: RecyclerView.ViewHolder? = recyclerViewFunction.findViewHolderForAdapterPosition(position)
             viewHolder?.itemView?.findViewById<ProgressBar>(R.id.progress_method)?.visibility = View.GONE
             viewHolder?.itemView?.findViewById<AppCompatImageView>(R.id.imgView_log)
                 ?.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorPrimary))
@@ -1834,15 +1907,17 @@ class FunctionFragment : Fragment(), FunctionAdapter.ViewHolderListener, TestLis
 
     /* visibility of progress bar*/
     private fun changeIconSend(position: Int, methodName: String, uniqueId: String) {
-        val callBackMethod = CallBackMethod(methodName, position)
-        funcCallback[uniqueId] = callBackMethod
-        methods[position].pending = true
+        if (this.chatStates!!) {
+            val callBackMethod = CallBackMethod(methodName, position)
+            funcCallback[uniqueId] = callBackMethod
+            methods[position].pending = true
 
-        activity?.runOnUiThread {
+            activity?.runOnUiThread {
 
-            val viewHolder: RecyclerView.ViewHolder = recyclerView.findViewHolderForAdapterPosition(position)!!
-            viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
-
+                val viewHolder: RecyclerView.ViewHolder =
+                    recyclerViewFunction.findViewHolderForAdapterPosition(position)!!
+                viewHolder.itemView.findViewById<ProgressBar>(R.id.progress_method).visibility = View.VISIBLE
+            }
         }
     }
 /*

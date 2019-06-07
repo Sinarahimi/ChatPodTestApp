@@ -1,9 +1,11 @@
-package ir.fanap.chattestapp.application.ui
+package ir.fanap.chattestapp.application.ui.upload
 
 import com.fanap.podchat.mainmodel.ResultDeleteMessage
 import com.fanap.podchat.model.*
 
-interface TestListener {
+interface UploadListener {
+
+     fun onGetThreadU() {}
 
     fun onGetContact(response: ChatResponse<ResultContact>?) {}
     fun onAddContact(response: ChatResponse<ResultAddContact>?) {}
@@ -81,5 +83,4 @@ interface TestListener {
     fun onChatState(state: String?) {
 
     }
-    fun connectActivity(){}
 }

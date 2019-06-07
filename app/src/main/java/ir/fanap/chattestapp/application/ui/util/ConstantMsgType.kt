@@ -46,6 +46,11 @@ class ConstantMsgType {
         const val ERROR = "ERROR"
         const val EMPTY_ERROR_LOG = ""
         const val REMOVE_PARTICIPANT_ID = "REMOVE_PARTICIPANT_ID"
+        const val UPLOAD_IMAGE = "UPLOAD_IMAGE"
+        const val UPLOAD_FILE = "UPLOAD_FILE"
+        const val REPLY_FILE_MESSAGE_UPLOADED = "REPLY_FILE_MESSAGE_UPLOADED"
+        const val CREATE_THREAD_WITH_MSG = "CREATE_THREAD_WITH_MSG"
+        const val CREATE_THREAD_NORMAL = "CREATE_THREAD_NORMAL"
     }
 
     @StringDef(
@@ -82,6 +87,7 @@ class ConstantMsgType {
         ADD_PARTICIPANT_ID,
         BLOCK_LIST,
         REMOVE_PARTICIPANT_ID,
+        REPLY_FILE_MESSAGE_UPLOADED,
         DELETE_MESSAGE
     )
 

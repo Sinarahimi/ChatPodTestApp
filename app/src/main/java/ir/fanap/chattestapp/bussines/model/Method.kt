@@ -1,5 +1,7 @@
 package ir.fanap.chattestapp.bussines.model
 
+import com.github.javafaker.Bool
+
 
 class Method {
 
@@ -20,5 +22,7 @@ class Method {
     var funcStatusList : MutableList<FunctionStatus>? = null
 
     var pending :Boolean = false
+
+    var error :Boolean = false
 
 }

@@ -2,6 +2,7 @@ package ir.fanap.chattestapp.application.ui.log
 
 import android.app.SearchManager
 import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -16,13 +17,14 @@ import ir.fanap.chattestapp.application.ui.MainViewModel
 import ir.fanap.chattestapp.application.ui.TestListener
 import kotlinx.android.synthetic.main.fragment_log.*
 import android.content.Context
+import com.fanap.podchat.model.ChatResponse
+import com.fanap.podchat.model.ResultThreads
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ir.fanap.chattestapp.application.ui.IOnBackPressed
 
 
-class LogFragment : Fragment(), TestListener,IOnBackPressed {
-
+class LogFragment : Fragment(), LogListener,IOnBackPressed {
 
     private lateinit var mainViewModel: MainViewModel
     private var logs: MutableList<String> = mutableListOf()
@@ -71,9 +73,8 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(activity!!.application)
-            .create(MainViewModel::class.java)
-        mainViewModel.setTestListener(this)
+        mainViewModel = activity.run {  ViewModelProviders.of(this!!).get(MainViewModel::class.java) }
+        mainViewModel.setLogListener(this)
         setHasOptionsMenu(true)
 
     }
@@ -127,6 +128,4 @@ class LogFragment : Fragment(), TestListener,IOnBackPressed {
             logAdapter.notifyDataSetChanged()
         }
     }
-
-
 }

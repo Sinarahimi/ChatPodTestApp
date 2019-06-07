@@ -1,6 +1,5 @@
-package ir.fanap.chattestapp.application.ui.function
+package ir.fanap.chattestapp.application.ui.upload
 
-import android.content.Context
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
@@ -13,18 +12,12 @@ import android.widget.TextView
 import ir.fanap.chattestapp.R
 import ir.fanap.chattestapp.bussines.model.Method
 
-class FunctionAdapter(
+class UploadAdapter(
     private val context: FragmentActivity,
     private val methods: MutableList<Method>,
-    private val viewHolderListener1: ViewHolderListener
-) :
-    RecyclerView.Adapter<FunctionAdapter.ViewHolder>() {
+    viewHolderListener1: UploadViewHListener) : RecyclerView.Adapter<UploadAdapter.ViewHolderUpload>() {
 
-    private val viewHolderListener: ViewHolderListener = viewHolderListener1
-    private var pos: Int? = null
-
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
+    override fun onBindViewHolder(viewHolder: ViewHolderUpload, position: Int) {
         viewHolder.txtViewMethod.text = methods[position].methodName
         viewHolder.textViewFuncOne.text = methods[position].funcOne
         viewHolder.textViewFuncTwo.text = methods[position].funcTwo
@@ -39,20 +32,66 @@ class FunctionAdapter(
             viewHolder.progress_method.visibility = View.GONE
         }
 
-        if (methods[position].methodNameFlag != null && methods[position].methodNameFlag == true) {
+        if (methods[position].methodNameFlag == true) {
 
             context.runOnUiThread {
-
-                viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
             }
+
+            viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
         } else {
-            context.runOnUiThread {
-                viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.grey_log_color))
-            }
+            viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.grey_log_color))
         }
 
         if (methods[position].error) {
             viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent))
+        } else {
+            viewHolder.buttonLog.setColorFilter(ContextCompat.getColor(context, R.color.grey_log_color))
+        }
+
+
+        if (methods[position].funcOneFlag == true) {
+            viewHolder.checkBoxOne
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxOne
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxOne
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+
+        if (methods[position].funcTwoFlag == true) {
+            viewHolder.checkBoxSec
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxSec
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxSec
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+        if (methods[position].funcThreeFlag == true) {
+            viewHolder.checkBoxThird
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxThird
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxThird
+                .setImageResource(R.drawable.ic_done_black_24dp)
+        }
+
+        if (methods[position].funcFourFlag == true) {
+            viewHolder.checkBoxFourth
+                .setImageResource(R.drawable.ic_round_done_all_24px)
+
+            viewHolder.checkBoxFourth
+                .setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+        } else {
+            viewHolder.checkBoxFourth
+                .setImageResource(R.drawable.ic_done_black_24dp)
         }
 
         if (!viewHolder.textViewFuncOne.text.isEmpty()) {
@@ -85,15 +124,25 @@ class FunctionAdapter(
             viewHolder.checkBoxFourth.visibility = View.GONE
             viewHolder.textViewFuncFour.visibility = View.GONE
         }
+
     }
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): ViewHolderUpload {
+        val v = LayoutInflater.from(viewGroup.context)
+            .inflate(R.layout.item_method, viewGroup, false)
+        return ViewHolderUpload(v, viewHolderListener)
+    }
+
+    private val viewHolderListener: UploadViewHListener = viewHolderListener1
+    private var pos: Int? = null
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
     }
 
-    fun tik(context: Context, viewHolder: ViewHolder) {
-        viewHolder.checkBox.setColorFilter(context.resources.getColor(R.color.colorPrimary))
-    }
+//        fun tik(context: Context, viewHolder: ViewHolder) {
+//            viewHolder.checkBox.setColorFilter(context.resources.getColor(R.color.colorPrimary))
+//        }
 
     override fun getItemId(position: Int): Long {
         return super.getItemId(position)
@@ -111,7 +160,7 @@ class FunctionAdapter(
         this.pos = position
     }
 
-    inner class ViewHolder(itemView: View, viewHolderListener: ViewHolderListener) :
+    inner class ViewHolderUpload(itemView: View, viewHolderListener: UploadViewHListener) :
         RecyclerView.ViewHolder(itemView) {
 
 
@@ -141,15 +190,15 @@ class FunctionAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_method, viewGroup, false)
-        return ViewHolder(v, viewHolderListener)
-    }
+//        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+//            val v = LayoutInflater.from(viewGroup.context)
+//                .inflate(R.layout.item_method, viewGroup, false)
+//            return ViewHolder(v, viewHolderListener)
+//        }
 
-    interface ViewHolderListener {
-        fun onIconClicked(clickedViewHolder: ViewHolder)
-        fun onLogClicked(clickedViewHolder: ViewHolder)
+    interface UploadViewHListener {
+        fun onIconClicked(clickedViewHolder: ViewHolderUpload)
+        fun onLogClicked(clickedViewHolder: ViewHolderUpload)
     }
 
     interface ICheckChangeListener {
